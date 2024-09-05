@@ -1,0 +1,102 @@
+package me.ibrahim.profilemate.presentation.login_ui
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import me.ibrahim.profilemate.R
+
+@Composable
+fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    var showPassword: Boolean by remember { mutableStateOf(false) }
+
+    val loginState by loginVM.loginStateFlow.collectAsStateWithLifecycle()
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OutlinedTextField(
+            value = email, onValueChange = { email = it },
+            label = { Text(text = "Email") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 22.dp),
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        OutlinedTextField(
+            value = password, onValueChange = { password = it },
+            label = { Text(text = "Password") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 22.dp),
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+
+                val image = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                val description = if (showPassword) stringResource(id = R.string.hide_password) else stringResource(id = R.string.show_password)
+
+                IconButton(onClick = { showPassword = showPassword.not() }) {
+                    Icon(imageVector = image, contentDescription = description)
+                }
+            }
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        ElevatedButton(
+            enabled = loginState !is LoginStates.Loading,
+            onClick = {
+                loginVM.onEvent(LoginScreenEvent.LoginClicked(email, password))
+            },
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(text = stringResource(id = R.string.login))
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        if (loginState is LoginStates.Error) {
+            Text(
+                text = "${stringResource(id = R.string.error)}: ${(loginState as LoginStates.Error).error}",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+    }
+}
