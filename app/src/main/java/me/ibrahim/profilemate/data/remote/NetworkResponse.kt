@@ -1,6 +1,4 @@
-package me.ibrahim.profilemate.data.api
-
-import androidx.annotation.StringRes
+package me.ibrahim.profilemate.data.remote
 
 
 sealed class NetworkResponse<T> {

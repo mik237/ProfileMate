@@ -1,6 +1,6 @@
 package me.ibrahim.profilemate.domain.base
 
-import me.ibrahim.profilemate.data.api.NetworkResponse
+import me.ibrahim.profilemate.data.remote.NetworkResponse
 import me.ibrahim.profilemate.domain.managers.ConnectionManager
 
 open class BaseRepository {

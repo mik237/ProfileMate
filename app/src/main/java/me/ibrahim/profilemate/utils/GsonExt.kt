@@ -9,3 +9,11 @@ fun <T> Gson.fromJsonSafe(jsonStr: String, classType: Class<T>): T? {
         null
     }
 }
+
+fun <T> Gson.toJsonSafe(classType: T): String {
+    return try {
+        this.toJson(classType)
+    } catch (e: Exception) {
+        ""
+    }
+}

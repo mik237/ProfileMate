@@ -1,4 +1,4 @@
-package me.ibrahim.profilemate.data.api
+package me.ibrahim.profilemate.data.remote
 
 import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager
 import okhttp3.Interceptor

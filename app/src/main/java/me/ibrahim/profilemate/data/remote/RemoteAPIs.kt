@@ -1,4 +1,4 @@
-package me.ibrahim.profilemate.data.api
+package me.ibrahim.profilemate.data.remote
 
 import me.ibrahim.profilemate.data.dto.LoginRequest
 import me.ibrahim.profilemate.data.dto.LoginResponse
@@ -10,7 +10,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface RemoteAPIs {
 

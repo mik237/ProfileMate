@@ -1,19 +1,19 @@
 package me.ibrahim.profilemate.di
 
 import android.app.Application
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import me.ibrahim.profilemate.data.api.RemoteAPIs
 import me.ibrahim.profilemate.data.managers.LocalDataStoreManagerImpl
+import me.ibrahim.profilemate.data.remote.RemoteAPIs
 import me.ibrahim.profilemate.data.repository.RemoteRepositoryImpl
 import me.ibrahim.profilemate.domain.managers.ApiManager
 import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager
 import me.ibrahim.profilemate.domain.repository.RemoteRepository
 import me.ibrahim.profilemate.domain.use_cases.LoginUseCase
-import me.ibrahim.profilemate.domain.use_cases.ReadTokenUseCase
-import me.ibrahim.profilemate.domain.use_cases.SaveTokenUseCase
+import okhttp3.mockwebserver.MockWebServer
 import javax.inject.Singleton
 
 @Module
@@ -22,19 +22,27 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLocalDataStoreManager(app: Application): LocalDataStoreManager {
-        return LocalDataStoreManagerImpl(app)
+    fun provideLocalDataStoreManager(app: Application, gson: Gson): LocalDataStoreManager {
+        return LocalDataStoreManagerImpl(context = app, gson = gson)
     }
 
-    @Provides
-    @Singleton
-    fun provideReadTokenUseCase(localDataStoreManager: LocalDataStoreManager): ReadTokenUseCase =
-        ReadTokenUseCase(localDataStoreManager = localDataStoreManager)
 
-    @Provides
+    /*@Provides
     @Singleton
-    fun provideSaveTokenUseCase(localDataStoreManager: LocalDataStoreManager): SaveTokenUseCase =
-        SaveTokenUseCase(localDataStoreManager = localDataStoreManager)
+    fun provideSaveUserUseCase(
+        localDataStoreManager: LocalDataStoreManager
+    ): SaveUserUseCase =
+        SaveUserUseCase(
+            localDataStoreManager = localDataStoreManager
+        )*/
+
+    /*@Provides
+    @Singleton
+    fun provideReadUserUseCase(
+        localDataStoreManager: LocalDataStoreManager
+    ): ReadUserUseCase = ReadUserUseCase(
+        localDataStoreManager = localDataStoreManager
+    )*/
 
     @Provides
     @Singleton
@@ -44,7 +52,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRemoteRepository(remoteAPIs: RemoteAPIs, apiManager: ApiManager): RemoteRepository {
+    fun provideRemoteRepository(remoteAPIs: RemoteAPIs, apiManager: ApiManager, mockWebServer: MockWebServer): RemoteRepository {
         return RemoteRepositoryImpl(remoteAPIs = remoteAPIs, apiManager = apiManager)
     }
 }

@@ -1,6 +1,5 @@
 package me.ibrahim.profilemate.presentation.login_ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -8,22 +7,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import me.ibrahim.profilemate.data.api.NetworkResponse
+import me.ibrahim.profilemate.data.remote.NetworkResponse
 import me.ibrahim.profilemate.data.dto.LoginRequest
+import me.ibrahim.profilemate.domain.models.User
 import me.ibrahim.profilemate.domain.use_cases.LoginUseCase
 import me.ibrahim.profilemate.domain.use_cases.SaveTokenUseCase
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
+import me.ibrahim.profilemate.domain.use_cases.SaveUserUseCase
 import javax.inject.Inject
 
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val saveTokenUseCase: SaveTokenUseCase
+    private val saveTokenUseCase: SaveTokenUseCase,
+    private val saveUserUseCase: SaveUserUseCase
 ) : ViewModel() {
 
     private val _loginMutableStateFlow = MutableStateFlow<LoginStates>(LoginStates.Initial)
@@ -52,7 +49,18 @@ class LoginViewModel @Inject constructor(
 
                     is NetworkResponse.Success -> {
                         val loginResponse = response.data
-                        saveTokenUseCase(loginResponse.token)
+
+                        saveTokenUseCase(token = loginResponse.token)
+
+                        val user = User(
+                            userId = loginResponse.userid,
+                            email = loginRequest.email,
+                            password = loginRequest.password,
+                            avatarUrl = ""
+                        )
+
+                        saveUserUseCase(user = user)
+
                         _loginMutableStateFlow.value = LoginStates.Success
                     }
                 }

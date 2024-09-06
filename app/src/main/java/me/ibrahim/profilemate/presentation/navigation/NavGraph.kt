@@ -1,13 +1,11 @@
 package me.ibrahim.profilemate.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import me.ibrahim.profilemate.presentation.login_ui.LoginScreen
-import me.ibrahim.profilemate.presentation.login_ui.LoginViewModel
 import me.ibrahim.profilemate.presentation.profile_ui.ProfileScreen
 
 

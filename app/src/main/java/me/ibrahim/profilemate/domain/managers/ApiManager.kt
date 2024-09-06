@@ -1,6 +1,6 @@
 package me.ibrahim.profilemate.domain.managers
 
-import me.ibrahim.profilemate.data.api.NetworkResponse
+import me.ibrahim.profilemate.data.remote.NetworkResponse
 import retrofit2.Response
 
 interface ApiManager {

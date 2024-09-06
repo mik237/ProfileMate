@@ -29,6 +29,7 @@ class MainViewModel @Inject constructor(readTokenUseCase: ReadTokenUseCase) : Vi
             } else {
                 Routes.NavAppProfile.route
             }
+            delay(300)
             splashScreenHold = false
         }.launchIn(viewModelScope)
     }

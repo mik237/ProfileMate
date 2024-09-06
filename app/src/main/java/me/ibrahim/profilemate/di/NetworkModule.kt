@@ -6,17 +6,24 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import me.ibrahim.profilemate.data.api.AuthInterceptor
-import me.ibrahim.profilemate.data.api.RemoteAPIs
-import me.ibrahim.profilemate.data.api.RemoteAPIsLocalImpl
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import me.ibrahim.profilemate.data.ResponseBuilder
+import me.ibrahim.profilemate.data.remote.AuthInterceptor
+import me.ibrahim.profilemate.data.remote.RemoteAPIs
+import me.ibrahim.profilemate.data.remote.RemoteAPIsLocalImpl
 import me.ibrahim.profilemate.data.managers.ApiManagerImpl
 import me.ibrahim.profilemate.domain.managers.ApiManager
 import me.ibrahim.profilemate.domain.managers.ConnectionManager
 import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager
 import okhttp3.OkHttpClient
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
@@ -25,18 +32,25 @@ import javax.inject.Singleton
 object NetworkModule {
     @Provides
     @Singleton
-    fun provideRemoteAPIs(okHttpClient: OkHttpClient): RemoteAPIs {
-        //Providing local implementation of RemoteAPIs with mock response.
-        return RemoteAPIsLocalImpl()
+    fun provideRemoteAPIs(
+        okHttpClient: OkHttpClient,
+        mockServer: MockWebServer,
+        responseBuilder: ResponseBuilder
+    ): RemoteAPIs {
 
-        /*
-        val retrofit = Retrofit.Builder()
-            .baseUrl("BASE_URL")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        return retrofit.create(RemoteAPIs::class.java)
-        */
+        //Providing local implementation of RemoteAPIs with mock response.
+        return RemoteAPIsLocalImpl(responseBuilder = responseBuilder)
+
+        /*return runBlocking {
+            val retrofit = withContext(Dispatchers.IO) {
+                Retrofit.Builder()
+                    .baseUrl(mockServer.url("/"))
+                    .client(okHttpClient)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+            }
+            retrofit.create(RemoteAPIs::class.java)
+        }*/
     }
 
 
@@ -76,14 +90,11 @@ object NetworkModule {
     fun provideConnectionManager(app: Application) = ConnectionManager(app)
 
 
-    /* @Provides
-     @Singleton
-     fun provideMockServer(): MockWebServer {
-         val mockServer = MockWebServer()
-         mockServer.enqueue(MockResponse().setBody("{ \"userid\": \"12345\", \"token\": \"abcdef\" }"))
-         mockServer.enqueue(MockResponse().setBody("{ \"email\": \"user@example.com\", \"avatar_url\": \"https://example.com/avatar.png\" }"))
-         mockServer.enqueue(MockResponse().setBody("{ \"avatar_url\": \"https://example.com/new_avatar.png\" }"))
-         return mockServer
-     }*/
+    @Provides
+    @Singleton
+    fun provideMockServer(): MockWebServer {
+        val mockServer = MockWebServer()
+        return mockServer
+    }
 
 }

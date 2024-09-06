@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.ibrahim.profilemate.data.api.NetworkResponse
+import me.ibrahim.profilemate.data.remote.NetworkResponse
 import me.ibrahim.profilemate.domain.managers.ApiManager
 import me.ibrahim.profilemate.domain.managers.ConnectionManager
 import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager

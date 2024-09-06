@@ -1,11 +1,10 @@
 package me.ibrahim.profilemate.data.repository
 
-import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import me.ibrahim.profilemate.data.api.NetworkResponse
-import me.ibrahim.profilemate.data.api.RemoteAPIs
+import me.ibrahim.profilemate.data.remote.NetworkResponse
+import me.ibrahim.profilemate.data.remote.RemoteAPIs
 import me.ibrahim.profilemate.data.dto.LoginRequest
 import me.ibrahim.profilemate.data.dto.LoginResponse
 import me.ibrahim.profilemate.domain.base.BaseRepository
