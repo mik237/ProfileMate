@@ -4,4 +4,6 @@
     <string name="hide_password">hide password</string>
     <string name="login">Login</string>
     <string name="error">Error</string>
+    <string name="profile_pic">Profile Picture</string>
+    <string name="edit_profile_pic">Edit Profile Pic</string>
 </resources>

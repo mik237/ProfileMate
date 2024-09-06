@@ -6,24 +6,16 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import me.ibrahim.profilemate.data.ResponseBuilder
+import me.ibrahim.profilemate.data.managers.ApiManagerImpl
 import me.ibrahim.profilemate.data.remote.AuthInterceptor
 import me.ibrahim.profilemate.data.remote.RemoteAPIs
 import me.ibrahim.profilemate.data.remote.RemoteAPIsLocalImpl
-import me.ibrahim.profilemate.data.managers.ApiManagerImpl
 import me.ibrahim.profilemate.domain.managers.ApiManager
 import me.ibrahim.profilemate.domain.managers.ConnectionManager
 import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager
 import okhttp3.OkHttpClient
-import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 
