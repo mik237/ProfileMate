@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import me.ibrahim.profilemate.data.remote.NetworkResponse
@@ -31,6 +33,9 @@ class ProfileViewModel @Inject constructor(
     private val _imageUriMutableStateFlow = MutableStateFlow<Uri?>(null)
     val imageUriStateFlow = _imageUriMutableStateFlow.asStateFlow()
 
+    private val _errorMutSharedFlow = MutableSharedFlow<String?>()
+    val errorSharedFlow = _errorMutSharedFlow.asSharedFlow()
+
     fun onEvent(event: ProfileEvents) {
         when (event) {
             ProfileEvents.CreateImageFile -> createImageFile()
@@ -45,10 +50,10 @@ class ProfileViewModel @Inject constructor(
 
     private fun uploadAvatar(uri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
-
             uploadAvatarUseCase(uri = uri).collect { response ->
                 when (response) {
                     is NetworkResponse.Error -> {
+                        _errorMutSharedFlow.emit(response.errorMsg)
                         _userProfileMutableState.value = _userProfileMutableState.value.copy(
                             avatarState = AvatarState.UploadFailed(response.errorMsg)
                         )
@@ -83,6 +88,7 @@ class ProfileViewModel @Inject constructor(
             getUserUseCase().collect { response ->
                 when (response) {
                     is NetworkResponse.Error -> {
+                        _errorMutSharedFlow.emit(response.errorMsg)
                         _userProfileMutableState.value = _userProfileMutableState.value.copy(
                             profileUiState = ProfileUiState.Error(response.errorMsg)
                         )

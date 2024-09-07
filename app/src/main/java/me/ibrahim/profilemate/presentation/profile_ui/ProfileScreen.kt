@@ -2,6 +2,7 @@ package me.ibrahim.profilemate.presentation.profile_ui
 
 import android.Manifest
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.ibrahim.profilemate.presentation.profile_ui.components.ImagePickerBottomSheet
 import me.ibrahim.profilemate.presentation.profile_ui.components.ProfileAvatar
@@ -62,8 +64,16 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
 
     val scope = rememberCoroutineScope()
 
+    val context = LocalContext.current
+
     LaunchedEffect(key1 = Unit) {
         profileVM.onEvent(ProfileEvents.GetProfile)
+
+        profileVM.errorSharedFlow.collectLatest { errorMsg ->
+            errorMsg?.let { err ->
+                Toast.makeText(context, err, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     Column(

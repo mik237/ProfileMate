@@ -6,4 +6,6 @@
     <string name="error">Error</string>
     <string name="profile_pic">Profile Picture</string>
     <string name="edit_profile_pic">Edit Profile Pic</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
 </resources>

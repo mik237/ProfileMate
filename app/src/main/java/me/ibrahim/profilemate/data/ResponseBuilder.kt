@@ -39,7 +39,7 @@ class ResponseBuilder @Inject constructor(
 
     @OptIn(ExperimentalEncodingApi::class)
     private fun generateToken(): String {
-        val expiryTime = System.currentTimeMillis() + (10 * 60 * 1000)
+        val expiryTime = System.currentTimeMillis() + (20 * 60 * 1000)
         val uniqueId = UUID.randomUUID().toString()
         val tokenData = "$expiryTime:$uniqueId"
         return Base64.encode(tokenData.toByteArray())

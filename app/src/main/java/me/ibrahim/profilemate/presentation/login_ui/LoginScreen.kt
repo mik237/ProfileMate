@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -28,8 +29,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -49,6 +52,8 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
 
     val loginState by loginVM.loginStateFlow.collectAsStateWithLifecycle()
 
+    val focusManager = LocalFocusManager.current
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
@@ -67,11 +72,14 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
 
         OutlinedTextField(
             value = email, onValueChange = { email = it },
-            label = { Text(text = "Email") },
+            label = { Text(text = stringResource(id = R.string.email)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 22.dp),
             singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
             shape = RoundedCornerShape(8.dp),
         )
 
@@ -79,13 +87,17 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
 
         OutlinedTextField(
             value = password, onValueChange = { password = it },
-            label = { Text(text = "Password") },
+            label = { Text(text = stringResource(id = R.string.password)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 22.dp),
             singleLine = true,
             shape = RoundedCornerShape(8.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Password
+            ),
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
             visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
 
@@ -105,7 +117,7 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
                 .fillMaxWidth()
                 .padding(horizontal = 22.dp)
                 .height(50.dp),
-            enabled = loginState !is LoginStates.Loading,
+            enabled = (loginState !is LoginStates.Loading) && (email.isNotEmpty() && password.isNotEmpty()),
             onClick = {
                 loginVM.onEvent(LoginScreenEvent.LoginClicked(email, password))
             },
