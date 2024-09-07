@@ -8,10 +8,10 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
-import me.ibrahim.profilemate.data.dto.LoginResponse
 import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager
 import me.ibrahim.profilemate.domain.models.User
 import me.ibrahim.profilemate.utils.AppConstants
@@ -50,6 +50,11 @@ class LocalDataStoreManagerImpl(
             val userStr = preferences[PreferencesKeys.KEY_USER] ?: ""
             gson.fromJsonSafe(userStr, User::class.java)
         }
+    }
+
+
+    override suspend fun getUserId(): String {
+        return readUser().firstOrNull()?.userId ?: ""
     }
 
     override fun getToken(): String? = runBlocking {

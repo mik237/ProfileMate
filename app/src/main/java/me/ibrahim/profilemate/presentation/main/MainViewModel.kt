@@ -9,7 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import me.ibrahim.profilemate.domain.use_cases.ReadTokenUseCase
+import me.ibrahim.profilemate.domain.use_cases.profile.ReadTokenUseCase
 import me.ibrahim.profilemate.presentation.navigation.Routes
 import javax.inject.Inject
 

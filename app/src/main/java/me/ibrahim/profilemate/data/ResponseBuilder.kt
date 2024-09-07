@@ -2,7 +2,8 @@ package me.ibrahim.profilemate.data
 
 import kotlinx.coroutines.flow.first
 import me.ibrahim.profilemate.data.dto.LoginResponse
-import me.ibrahim.profilemate.data.dto.UploadPhotoResponse
+import me.ibrahim.profilemate.data.dto.UploadAvatarRequest
+import me.ibrahim.profilemate.data.dto.UploadAvatarResponse
 import me.ibrahim.profilemate.data.dto.UserProfileResponse
 import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager
 import java.util.UUID
@@ -30,9 +31,9 @@ class ResponseBuilder @Inject constructor(
         return UserProfileResponse(avatarUrl = user?.avatarUrl ?: "", email = user?.email ?: "")
     }
 
-    suspend fun getUploadPhotoResponse(): UploadPhotoResponse {
-        val user = localDataStoreManager.readUser().first()
-        return UploadPhotoResponse(avatarUrl = user?.avatarUrl ?: "")
+    suspend fun getUploadAvatarResponse(uploadAvatarRequest: UploadAvatarRequest): UploadAvatarResponse {
+        //returning the url in the response.
+        return UploadAvatarResponse(avatarUrl = uploadAvatarRequest.avatarUrl)
     }
 
 

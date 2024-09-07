@@ -66,10 +66,9 @@ object NetworkModule {
     @Singleton
     fun provideApiManager(
         localDataStoreManager: LocalDataStoreManager,
-        connectionManager: ConnectionManager,
         gson: Gson
     ): ApiManager {
-        return ApiManagerImpl(localDataStoreManager = localDataStoreManager, connectionManager = connectionManager, gson = gson)
+        return ApiManagerImpl(localDataStoreManager = localDataStoreManager, gson = gson)
     }
 
     @Provides

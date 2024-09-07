@@ -1,8 +1,5 @@
-package me.ibrahim.profilemate.presentation.profile_ui
+package me.ibrahim.profilemate.presentation.profile_ui.components
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,11 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.rounded.AccountCircle
-import androidx.compose.material.icons.rounded.CameraAlt
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,54 +17,64 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.imageLoader
+import coil.request.CachePolicy
+import coil.request.ImageRequest
+import kotlinx.coroutines.Dispatchers
 import me.ibrahim.profilemate.R
 
 @Composable
-fun ProfileImage(imageUrl: Uri?, onImageChangeClick: (newUri: Uri) -> Unit = {}) {
-    val color = MaterialTheme.colorScheme
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            onImageChangeClick(it)
-        }
-    }
+fun ProfileAvatar(avatarUrl: String?, changeAvatar: () -> Unit = {}) {
 
     Box(Modifier.height(140.dp)) {
         Box(
             modifier = Modifier
                 .size(140.dp)
                 .clip(CircleShape)
-                .border(1.dp, color.primary, CircleShape),
+                .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape),
             contentAlignment = Alignment.Center
         ) {
+
+            val context = LocalContext.current
+            val placeholderImage = R.drawable.ic_placeholder
+            val imageRequest = ImageRequest.Builder(context)
+                .data(avatarUrl)
+                .crossfade(400)
+                .dispatcher(Dispatchers.IO)
+                .memoryCacheKey(avatarUrl)
+                .diskCacheKey(avatarUrl)
+                .placeholder(placeholderImage)
+                .error(placeholderImage)
+                .fallback(placeholderImage)
+                .diskCachePolicy(CachePolicy.ENABLED)
+                .memoryCachePolicy(CachePolicy.ENABLED)
+                .build()
+
             AsyncImage(
-                model = imageUrl,
+                model = imageRequest,
+                imageLoader = context.imageLoader,
                 modifier = Modifier
                     .size(140.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop,
-                placeholder = rememberVectorPainter(image = Icons.Rounded.AccountCircle),
-                error = rememberVectorPainter(image = Icons.Rounded.AccountCircle),
                 contentDescription = stringResource(id = R.string.profile_pic),
             )
         }
 
 
         IconButton(
-            onClick = { launcher.launch("image/*") },
+            onClick = changeAvatar,
             modifier = Modifier
                 .size(35.dp)
                 .padding(2.dp)
                 .clip(CircleShape)
                 .align(Alignment.BottomEnd),
-            colors = IconButtonDefaults.iconButtonColors(color.primary),
+            colors = IconButtonDefaults.iconButtonColors(MaterialTheme.colorScheme.primary),
         ) {
             Icon(
                 imageVector = Icons.Rounded.Edit,
@@ -80,7 +82,7 @@ fun ProfileImage(imageUrl: Uri?, onImageChangeClick: (newUri: Uri) -> Unit = {})
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(5.dp),
-                tint = color.onPrimary
+                tint = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

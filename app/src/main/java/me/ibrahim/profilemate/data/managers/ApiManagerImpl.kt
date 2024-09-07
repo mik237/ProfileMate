@@ -15,7 +15,6 @@ import java.net.UnknownHostException
 
 class ApiManagerImpl(
     private val localDataStoreManager: LocalDataStoreManager,
-    private val connectionManager: ConnectionManager,
     private val gson: Gson
 ) : ApiManager {
 
@@ -34,9 +33,7 @@ class ApiManagerImpl(
         call: suspend () -> Response<T>
     ): NetworkResponse<T> {
         return try {
-            if (connectionManager.isConnected().not()) {
-                throw UnknownHostException()
-            }
+
 
             if (checkToken) {
                 val token = localDataStoreManager.getToken()
@@ -59,17 +56,17 @@ class ApiManagerImpl(
                     val err = gson.fromJsonSafe(error, JsonObject::class.java)
                     val msg = err?.get("error")?.asJsonObject?.get("message")?.asString ?: ""
                     val code = err?.get("error")?.asJsonObject?.get("code")?.asInt
-                    NetworkResponse.Error(message = msg, errorCode = code)
+                    NetworkResponse.Error(errorMsg = msg, errorCode = code)
                 }
 
                 else -> {
-                    NetworkResponse.Error(message = response.message())
+                    NetworkResponse.Error(errorMsg = response.message())
                 }
             }
         } catch (e: HttpException) {
-            NetworkResponse.Error(message = e.message())
+            NetworkResponse.Error(errorMsg = e.message())
         } catch (e: Exception) {
-            NetworkResponse.Error(message = e.localizedMessage)
+            NetworkResponse.Error(errorMsg = e.localizedMessage)
         }
     }
 }

@@ -1,4 +1,4 @@
-package me.ibrahim.profilemate.domain.use_cases
+package me.ibrahim.profilemate.domain.use_cases.profile
 
 import kotlinx.coroutines.flow.Flow
 import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager

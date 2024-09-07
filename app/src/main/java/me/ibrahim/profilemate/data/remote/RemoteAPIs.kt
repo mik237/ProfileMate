@@ -2,8 +2,8 @@ package me.ibrahim.profilemate.data.remote
 
 import me.ibrahim.profilemate.data.dto.LoginRequest
 import me.ibrahim.profilemate.data.dto.LoginResponse
-import me.ibrahim.profilemate.data.dto.UploadPhotoRequest
-import me.ibrahim.profilemate.data.dto.UploadPhotoResponse
+import me.ibrahim.profilemate.data.dto.UploadAvatarRequest
+import me.ibrahim.profilemate.data.dto.UploadAvatarResponse
 import me.ibrahim.profilemate.data.dto.UserProfileResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -23,6 +23,6 @@ interface RemoteAPIs {
     @POST("/users/{userid}/avatar")
     suspend fun uploadProfileAvatar(
         @Path("userid") userid: String,
-        @Body uploadPhotoRequest: UploadPhotoRequest
-    ): Response<UploadPhotoResponse>
+        @Body uploadAvatarRequest: UploadAvatarRequest
+    ): Response<UploadAvatarResponse>
 }

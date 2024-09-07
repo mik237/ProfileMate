@@ -3,8 +3,8 @@ package me.ibrahim.profilemate.data.remote
 import me.ibrahim.profilemate.data.ResponseBuilder
 import me.ibrahim.profilemate.data.dto.LoginRequest
 import me.ibrahim.profilemate.data.dto.LoginResponse
-import me.ibrahim.profilemate.data.dto.UploadPhotoRequest
-import me.ibrahim.profilemate.data.dto.UploadPhotoResponse
+import me.ibrahim.profilemate.data.dto.UploadAvatarRequest
+import me.ibrahim.profilemate.data.dto.UploadAvatarResponse
 import me.ibrahim.profilemate.data.dto.UserProfileResponse
 import retrofit2.Response
 
@@ -23,7 +23,7 @@ class RemoteAPIsLocalImpl(val responseBuilder: ResponseBuilder) : RemoteAPIs {
         return Response.success(responseBuilder.getUserProfileResponse())
     }
 
-    override suspend fun uploadProfileAvatar(userid: String, uploadPhotoRequest: UploadPhotoRequest): Response<UploadPhotoResponse> {
-        return Response.success(responseBuilder.getUploadPhotoResponse())
+    override suspend fun uploadProfileAvatar(userid: String, uploadAvatarRequest: UploadAvatarRequest): Response<UploadAvatarResponse> {
+        return Response.success(responseBuilder.getUploadAvatarResponse(uploadAvatarRequest))
     }
 }

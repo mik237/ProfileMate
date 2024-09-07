@@ -10,9 +10,12 @@ import kotlinx.coroutines.launch
 import me.ibrahim.profilemate.data.remote.NetworkResponse
 import me.ibrahim.profilemate.data.dto.LoginRequest
 import me.ibrahim.profilemate.domain.models.User
-import me.ibrahim.profilemate.domain.use_cases.LoginUseCase
-import me.ibrahim.profilemate.domain.use_cases.SaveTokenUseCase
-import me.ibrahim.profilemate.domain.use_cases.SaveUserUseCase
+import me.ibrahim.profilemate.domain.use_cases.login.LoginUseCase
+import me.ibrahim.profilemate.domain.use_cases.profile.SaveTokenUseCase
+import me.ibrahim.profilemate.domain.use_cases.profile.SaveUserUseCase
+import me.ibrahim.profilemate.utils.AppConstants
+import me.ibrahim.profilemate.utils.getGravatarUrl
+import me.ibrahim.profilemate.utils.sha256
 import javax.inject.Inject
 
 
@@ -40,7 +43,7 @@ class LoginViewModel @Inject constructor(
             loginUseCase(loginRequest).collect { response ->
                 when (response) {
                     is NetworkResponse.Error -> {
-                        _loginMutableStateFlow.value = LoginStates.Error(error = response.message ?: "Unknown Error")
+                        _loginMutableStateFlow.value = LoginStates.Error(error = response.errorMsg ?: "Unknown Error")
                     }
 
                     is NetworkResponse.Loading -> {
@@ -56,7 +59,7 @@ class LoginViewModel @Inject constructor(
                             userId = loginResponse.userid,
                             email = loginRequest.email,
                             password = loginRequest.password,
-                            avatarUrl = ""
+                            avatarUrl = loginRequest.email.getGravatarUrl()
                         )
 
                         saveUserUseCase(user = user)

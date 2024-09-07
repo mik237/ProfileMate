@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 
 @Keep
 @Parcelize
-data class UploadPhotoResponse(
+data class UploadAvatarResponse(
     @SerializedName("avatar_url")
     val avatarUrl: String
 ) : Parcelable
