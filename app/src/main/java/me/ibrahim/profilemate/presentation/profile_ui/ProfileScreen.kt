@@ -63,7 +63,6 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = Unit) {
-        profileVM.onEvent(ProfileEvents.CreateImageFile)
         profileVM.onEvent(ProfileEvents.GetProfile)
     }
 
@@ -100,6 +99,7 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
             when (imagePicker) {
                 ImagePicker.CAMERA -> {
                     scope.launch {
+                        profileVM.onEvent(ProfileEvents.CreateImageFile)
                         if (cameraPermissionState.status.isGranted.not()) {
                             cameraPermissionState.launchPermissionRequest()
                         } else {
