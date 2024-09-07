@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import me.ibrahim.profilemate.data.managers.LocalDataStoreManagerImpl
+import me.ibrahim.profilemate.data.managers.SessionManagerImpl
 import me.ibrahim.profilemate.data.remote.RemoteAPIs
 import me.ibrahim.profilemate.data.repository.RemoteRepositoryImpl
 import me.ibrahim.profilemate.domain.managers.ApiManager
@@ -50,5 +51,11 @@ object AppModule {
             connectionManager = connectionManager,
             fileUtil = fileUtil
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSessionManager(localDataStoreManager: LocalDataStoreManager): SessionManager {
+        return SessionManagerImpl(localDataStoreManager)
     }
 }

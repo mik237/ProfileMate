@@ -6,39 +6,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.ibrahim.profilemate.data.remote.NetworkResponse
 import me.ibrahim.profilemate.domain.managers.ApiManager
-import me.ibrahim.profilemate.domain.managers.ConnectionManager
-import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager
 import me.ibrahim.profilemate.utils.fromJsonSafe
 import retrofit2.HttpException
 import retrofit2.Response
-import java.net.UnknownHostException
 
-class ApiManagerImpl(
-    private val localDataStoreManager: LocalDataStoreManager,
-    private val gson: Gson
-) : ApiManager {
-
-    /*suspend fun <T> newRequest(
-        clazz: Class<T>,
-        accessToken: String? = localDataStoreManager.getToken(),
-        checkTokenExpiry: Boolean = true
-    ): T {
-//        checkAuthToken(accessToken, checkTokenExpiry)
-        return retrofit.create(clazz)
-    }*/
-
+class ApiManagerImpl(private val gson: Gson) : ApiManager {
 
     override suspend fun <T : Any> handleApi(
-        checkToken: Boolean,
         call: suspend () -> Response<T>
     ): NetworkResponse<T> {
         return try {
-
-
-            if (checkToken) {
-                val token = localDataStoreManager.getToken()
-                // TODO: check for auth token first
-            }
 
             val response = call.invoke()
             val body = response.body()

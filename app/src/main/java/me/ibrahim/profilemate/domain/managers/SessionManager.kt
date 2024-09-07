@@ -1,5 +1,5 @@
 package me.ibrahim.profilemate.domain.managers
 
 interface SessionManager {
-    fun isSessionActive(): Boolean
+    fun isActiveSession(): Boolean
 }

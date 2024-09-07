@@ -42,8 +42,6 @@ class FileUtil @Inject constructor(
     fun compressBitmap(bitmap: Bitmap): File? {
         return try {
             val file = File(context.cacheDir, "compressed_pic.jpg")
-//            val file = File.createTempFile("compressed_pic", ".jpg")
-
             if (file.exists().not()) {
                 file.createNewFile()
             }
@@ -65,10 +63,9 @@ class FileUtil @Inject constructor(
                 "${context.packageName}.provider",
                 file
             )
-            fileUri
-            /*.buildUpon()
-            .appendQueryParameter("timeStamp", System.currentTimeMillis().toString())
-            .build()*/
+            fileUri.buildUpon()
+                .appendQueryParameter("timeStamp", System.currentTimeMillis().toString())
+                .build()
         } catch (e: Exception) {
             e.printStackTrace()
             null

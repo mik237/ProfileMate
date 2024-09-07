@@ -2,7 +2,6 @@ package me.ibrahim.profilemate.presentation.profile_ui
 
 import android.Manifest
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -74,7 +73,6 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
             .padding(start = 4.dp, end = 4.dp), horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        val context = LocalContext.current
         Spacer(modifier = Modifier.padding(top = 25.dp))
 
         ProfileAvatar(userProfileState.user?.avatarUrl) { showBottomSheet = showBottomSheet.not() }

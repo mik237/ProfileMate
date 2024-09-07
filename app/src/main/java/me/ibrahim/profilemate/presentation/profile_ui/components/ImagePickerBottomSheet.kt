@@ -1,7 +1,5 @@
 package me.ibrahim.profilemate.presentation.profile_ui.components
 
-import android.content.Context
-import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -19,11 +17,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import kotlinx.coroutines.launch
 import me.ibrahim.profilemate.R
 import me.ibrahim.profilemate.utils.ImagePicker
-import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -5,7 +5,6 @@ import retrofit2.Response
 
 interface ApiManager {
     suspend fun <T : Any> handleApi(
-        checkToken: Boolean = true,
         call: suspend () -> Response<T>
     ): NetworkResponse<T>
 }

@@ -45,7 +45,11 @@ class RemoteRepositoryImpl(
         //adding a delay to 500 milliseconds to show waiting of a network call
         delay(500L)
 
-        val response = withNetworkCheck(connectionManager) { apiManager.handleApi { remoteAPIs.getUserProfile(userid = userId) } }
+        val response = withNetworkCheck(connectionManager) {
+            withActiveSession(sessionManager) {
+                apiManager.handleApi { remoteAPIs.getUserProfile(userid = userId) }
+            }
+        }
 
         emit(response)
     }
@@ -56,14 +60,16 @@ class RemoteRepositoryImpl(
         delay(500L)
 
         val response = withNetworkCheck(connectionManager) {
-            val bitmap = fileUtil.getBitmapFromUri(uri)
-            val compressedFile = bitmap?.let { fileUtil.compressBitmap(it) }
-            val compressedFileUri = compressedFile?.let { fileUtil.getFileUri(it) }
-            val base64encodedBitmap = bitmap?.let { fileUtil.convertBitmapToBase64(it) } ?: ""
+            withActiveSession(sessionManager) {
+                val bitmap = fileUtil.getBitmapFromUri(uri)
+                val compressedFile = bitmap?.let { fileUtil.compressBitmap(it) }
+                val compressedFileUri = compressedFile?.let { fileUtil.getFileUri(it) }
+                val base64encodedBitmap = bitmap?.let { fileUtil.convertBitmapToBase64(it) } ?: ""
 
-            val uploadAvatarRequest = UploadAvatarRequest(avatar = base64encodedBitmap, avatarUrl = compressedFileUri.toString())
+                val uploadAvatarRequest = UploadAvatarRequest(avatar = base64encodedBitmap, avatarUrl = compressedFileUri.toString())
 
-            apiManager.handleApi { remoteAPIs.uploadProfileAvatar(userid = userId, uploadAvatarRequest = uploadAvatarRequest) }
+                apiManager.handleApi { remoteAPIs.uploadProfileAvatar(userid = userId, uploadAvatarRequest = uploadAvatarRequest) }
+            }
         }
 
         emit(response)
