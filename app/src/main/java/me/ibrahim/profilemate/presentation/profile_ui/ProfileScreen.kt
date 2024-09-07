@@ -106,6 +106,7 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
 
     if (showBottomSheet) {
         ImagePickerBottomSheet(onOptionSelected = { imagePicker ->
+
             when (imagePicker) {
                 ImagePicker.CAMERA -> {
                     scope.launch {
@@ -115,16 +116,20 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
                         } else {
                             profilePicUri?.let { cameraLauncher.launch(it) }
                         }
-                    }
+                    }.invokeOnCompletion { showBottomSheet = false }
                 }
 
                 ImagePicker.GALLERY -> {
-                    scope.launch { galleryLauncher.launch("image/*") }
+                    scope.launch { galleryLauncher.launch("image/*") }.invokeOnCompletion {
+                        showBottomSheet = false
+                    }
                 }
 
-                else -> {}
+                else -> {
+                    showBottomSheet = false
+                }
             }
-            showBottomSheet = false
+
         })
     }
 }
