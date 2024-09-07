@@ -119,6 +119,7 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
                 .height(50.dp),
             enabled = (loginState !is LoginStates.Loading) && (email.isNotEmpty() && password.isNotEmpty()),
             onClick = {
+                focusManager.clearFocus()
                 loginVM.onEvent(LoginScreenEvent.LoginClicked(email, password))
             },
             shape = RoundedCornerShape(50)
