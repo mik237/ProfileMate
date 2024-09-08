@@ -10,12 +10,14 @@ import me.ibrahim.profilemate.data.managers.LocalDataStoreManagerImpl
 import me.ibrahim.profilemate.data.managers.SessionManagerImpl
 import me.ibrahim.profilemate.data.remote.RemoteAPIs
 import me.ibrahim.profilemate.data.repository.RemoteRepositoryImpl
+import me.ibrahim.profilemate.data.utils.DefaultDispatchersProvider
 import me.ibrahim.profilemate.domain.managers.ApiManager
 import me.ibrahim.profilemate.domain.managers.ConnectionManager
 import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager
 import me.ibrahim.profilemate.domain.managers.SessionManager
 import me.ibrahim.profilemate.domain.repository.RemoteRepository
 import me.ibrahim.profilemate.domain.use_cases.login.LoginUseCase
+import me.ibrahim.profilemate.domain.utils.DispatchersProvider
 import me.ibrahim.profilemate.utils.FileUtil
 import javax.inject.Singleton
 
@@ -58,4 +60,9 @@ object AppModule {
     fun provideSessionManager(localDataStoreManager: LocalDataStoreManager): SessionManager {
         return SessionManagerImpl(localDataStoreManager)
     }
+
+    @Provides
+    @Singleton
+    fun provideDispatchersProvider(): DispatchersProvider = DefaultDispatchersProvider()
+
 }

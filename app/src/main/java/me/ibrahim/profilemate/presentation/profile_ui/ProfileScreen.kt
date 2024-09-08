@@ -66,7 +66,7 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
 
     val context = LocalContext.current
 
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = true) {
         profileVM.onEvent(ProfileEvents.GetProfile)
 
         profileVM.errorSharedFlow.collectLatest { errorMsg ->

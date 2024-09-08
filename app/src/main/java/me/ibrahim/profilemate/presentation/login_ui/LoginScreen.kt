@@ -16,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -134,6 +133,10 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
                 text = "${stringResource(id = R.string.error)}: ${(loginState as LoginStates.Error).error}",
                 color = MaterialTheme.colorScheme.error
             )
+        }
+        if (loginState is LoginStates.Success) {
+            loginVM.onEvent(LoginScreenEvent.SaveUser((loginState as LoginStates.Success).user))
+            loginVM.onEvent(LoginScreenEvent.SaveToken((loginState as LoginStates.Success).token))
         }
     }
 }

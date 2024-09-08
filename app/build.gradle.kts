@@ -60,7 +60,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -110,4 +109,13 @@ dependencies {
 
     //image compressor
 //    implementation ("id.zelory:compressor:3.0.1")
+
+
+    testImplementation(libs.junit)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("app.cash.turbine:turbine:0.13.0")
+    testImplementation("io.mockk:mockk:1.13.12")
+    testImplementation ("io.mockk:mockk-android:1.13.12")
+    testImplementation ("io.mockk:mockk-agent:1.13.12")
+
 }
