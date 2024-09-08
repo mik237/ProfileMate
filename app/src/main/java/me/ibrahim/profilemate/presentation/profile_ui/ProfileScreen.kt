@@ -3,10 +3,10 @@ package me.ibrahim.profilemate.presentation.profile_ui
 import android.Manifest
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -23,16 +23,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.ibrahim.profilemate.presentation.profile_ui.components.ImagePickerBottomSheet
-import me.ibrahim.profilemate.presentation.profile_ui.components.ProfileAvatar
-import me.ibrahim.profilemate.presentation.profile_ui.components.ProfileErrorUI
-import me.ibrahim.profilemate.presentation.profile_ui.components.ProfileInfoUI
-import me.ibrahim.profilemate.presentation.profile_ui.components.ProfileLoading
-import me.ibrahim.profilemate.utils.ImagePicker
+import me.ibrahim.profilemate.presentation.profile_ui.components.ProfileScreenContent
+import me.ibrahim.profilemate.utils.ImagePickerOption
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -43,21 +42,11 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
 
     val profilePicUri by profileVM.imageUriStateFlow.collectAsStateWithLifecycle()
 
-    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success) {
-            profilePicUri?.let { profileVM.onEvent(ProfileEvents.UploadAvatar(it)) }
-        }
-    }
+    val cameraLauncher = rememberCameraLauncher(profilePicUri, profileVM)
 
-    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let { profileVM.onEvent(ProfileEvents.UploadAvatar(it)) }
-    }
+    val galleryLauncher = rememberGalleryLauncher(profileVM)
 
-    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA) { granted ->
-        if (granted) {
-            profilePicUri?.let { cameraLauncher.launch(it) }
-        }
-    }
+    val cameraPermissionState = rememberCameraPermissionState(profilePicUri, cameraLauncher)
 
     var showBottomSheet by remember { mutableStateOf(false) }
 
@@ -82,55 +71,81 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
             .padding(start = 4.dp, end = 4.dp), horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(modifier = Modifier.padding(top = 25.dp))
+        ProfileScreenContent(
+            userProfileState = userProfileState,
+            changeAvatar = { showBottomSheet = showBottomSheet.not() }
+        )
 
-        ProfileAvatar(userProfileState.user?.avatarUrl) { showBottomSheet = showBottomSheet.not() }
-
-
-        when (userProfileState.profileUiState) {
-            is ProfileUiState.Error -> {
-                ProfileErrorUI(userProfileState.profileUiState)
-            }
-
-            ProfileUiState.Loading -> {
-                ProfileLoading()
-            }
-
-            ProfileUiState.Success -> {
-                ProfileInfoUI(userProfileState.user)
-            }
-
-            null -> {}
-        }
     }
 
     if (showBottomSheet) {
-        ImagePickerBottomSheet(onOptionSelected = { imagePicker ->
-
-            when (imagePicker) {
-                ImagePicker.CAMERA -> {
-                    scope.launch {
-                        profileVM.onEvent(ProfileEvents.CreateImageFile)
-                        if (cameraPermissionState.status.isGranted.not()) {
-                            cameraPermissionState.launchPermissionRequest()
-                        } else {
-                            profilePicUri?.let { cameraLauncher.launch(it) }
-                        }
-                    }.invokeOnCompletion { showBottomSheet = false }
-                }
-
-                ImagePicker.GALLERY -> {
-                    scope.launch { galleryLauncher.launch("image/*") }.invokeOnCompletion {
-                        showBottomSheet = false
-                    }
-                }
-
-                else -> {
-                    showBottomSheet = false
-                }
-            }
-
+        ImagePickerBottomSheet(onOptionSelected = { imagePickerOption ->
+            handleImagePickerOptions(
+                imagePickerOption,
+                profileVM,
+                cameraPermissionState,
+                cameraLauncher,
+                galleryLauncher,
+                scope
+            ) { showBottomSheet = false }
         })
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
+fun handleImagePickerOptions(
+    imagePickerOption: ImagePickerOption?,
+    profileVM: ProfileViewModel,
+    cameraPermissionState: PermissionState,
+    cameraLauncher: ManagedActivityResultLauncher<Uri, Boolean>,
+    galleryLauncher: ManagedActivityResultLauncher<String, Uri?>,
+    scope: CoroutineScope,
+    hideBottomSheet: () -> Unit
+) {
+    when (imagePickerOption) {
+        ImagePickerOption.CAMERA -> {
+            scope.launch {
+                profileVM.onEvent(ProfileEvents.CreateImageFile)
+                if (cameraPermissionState.status.isGranted.not()) {
+                    cameraPermissionState.launchPermissionRequest()
+                } else {
+                    profileVM.imageUriStateFlow.value?.let { cameraLauncher.launch(it) }
+                }
+            }.invokeOnCompletion { hideBottomSheet() }
+        }
+
+        ImagePickerOption.GALLERY -> {
+            scope.launch { galleryLauncher.launch("image/*") }.invokeOnCompletion {
+                hideBottomSheet()
+            }
+        }
+
+        else -> hideBottomSheet()
+    }
+}
+
+@Composable
+fun rememberCameraLauncher(profilePicUri: Uri?, profileVM: ProfileViewModel): ManagedActivityResultLauncher<Uri, Boolean> {
+    return rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            profilePicUri?.let { profileVM.onEvent(ProfileEvents.UploadAvatar(it)) }
+        }
+    }
+}
+
+@Composable
+fun rememberGalleryLauncher(profileVM: ProfileViewModel): ManagedActivityResultLauncher<String, Uri?> {
+    return rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let { profileVM.onEvent(ProfileEvents.UploadAvatar(it)) }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun rememberCameraPermissionState(profilePicUri: Uri?, cameraLauncher: ManagedActivityResultLauncher<Uri, Boolean>): PermissionState {
+    return rememberPermissionState(Manifest.permission.CAMERA) { granted ->
+        if (granted) {
+            profilePicUri?.let { cameraLauncher.launch(it) }
+        }
+    }
+}

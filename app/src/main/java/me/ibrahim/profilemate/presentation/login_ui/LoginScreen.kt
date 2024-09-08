@@ -70,7 +70,8 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
         Spacer(modifier = Modifier.padding(20.dp))
 
         OutlinedTextField(
-            value = email, onValueChange = { email = it },
+            value = email,
+            onValueChange = { email = it },
             label = { Text(text = stringResource(id = R.string.email)) },
             modifier = Modifier
                 .fillMaxWidth()

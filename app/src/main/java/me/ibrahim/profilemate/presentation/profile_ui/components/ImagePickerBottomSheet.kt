@@ -19,12 +19,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import me.ibrahim.profilemate.R
-import me.ibrahim.profilemate.utils.ImagePicker
+import me.ibrahim.profilemate.utils.ImagePickerOption
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImagePickerBottomSheet(
-    onOptionSelected: (ImagePicker?) -> Unit
+    onOptionSelected: (ImagePickerOption?) -> Unit
 ) {
     val bottomSheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -47,7 +47,7 @@ fun ImagePickerBottomSheet(
                 IconButton(onClick = {
                     scope.launch {
                         bottomSheetState.hide()
-                        onOptionSelected(ImagePicker.GALLERY)
+                        onOptionSelected(ImagePickerOption.GALLERY)
                     }
                 }) {
                     Icon(
@@ -59,7 +59,7 @@ fun ImagePickerBottomSheet(
                 IconButton(onClick = {
                     scope.launch {
                         bottomSheetState.hide()
-                        onOptionSelected(ImagePicker.CAMERA)
+                        onOptionSelected(ImagePickerOption.CAMERA)
                     }
                 }) {
                     Icon(
