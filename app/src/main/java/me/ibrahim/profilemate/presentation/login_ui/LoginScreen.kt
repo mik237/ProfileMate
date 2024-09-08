@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,11 +47,9 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
-    var showPassword: Boolean by remember { mutableStateOf(false) }
+    var showPassword by remember { mutableStateOf(false) }
 
     val loginState by loginVM.loginStateFlow.collectAsStateWithLifecycle()
-
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -134,6 +133,9 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
                 text = "${stringResource(id = R.string.error)}: ${(loginState as LoginStates.Error).error}",
                 color = MaterialTheme.colorScheme.error
             )
+        }
+        if (loginState is LoginStates.Loading) {
+            CircularProgressIndicator()
         }
         if (loginState is LoginStates.Success) {
             loginVM.onEvent(LoginScreenEvent.SaveUser((loginState as LoginStates.Success).user))
