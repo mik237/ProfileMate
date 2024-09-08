@@ -1,6 +1,6 @@
 package me.ibrahim.profilemate.utils
 
-enum class ImagePicker {
+enum class ImagePickerOption {
     CAMERA,
     GALLERY
 }
