@@ -12,11 +12,11 @@ class ConnectionManager @Inject constructor(val app: Application) {
         return isWifiEnabled() || isCellularDataEnabled()
     }
 
-    fun isWifiEnabled(): Boolean {
+    private fun isWifiEnabled(): Boolean {
         return isEnabled(NetworkCapabilities.TRANSPORT_WIFI)
     }
 
-    fun isCellularDataEnabled(): Boolean {
+    private fun isCellularDataEnabled(): Boolean {
         return isEnabled(NetworkCapabilities.TRANSPORT_CELLULAR)
     }
 
