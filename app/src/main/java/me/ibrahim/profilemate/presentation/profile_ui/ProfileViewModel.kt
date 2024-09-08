@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -15,6 +14,7 @@ import me.ibrahim.profilemate.domain.use_cases.profile.GetUserUseCase
 import me.ibrahim.profilemate.domain.use_cases.profile.ReadUserUseCase
 import me.ibrahim.profilemate.domain.use_cases.profile.SaveUserUseCase
 import me.ibrahim.profilemate.domain.use_cases.profile.UploadAvatarUseCase
+import me.ibrahim.profilemate.domain.utils.DispatchersProvider
 import me.ibrahim.profilemate.utils.FileUtil
 import javax.inject.Inject
 
@@ -24,7 +24,8 @@ class ProfileViewModel @Inject constructor(
     private val readUserUseCase: ReadUserUseCase,
     private val saveUserUseCase: SaveUserUseCase,
     private val uploadAvatarUseCase: UploadAvatarUseCase,
-    private val fileUtil: FileUtil
+    private val fileUtil: FileUtil,
+    private val dispatchersProvider: DispatchersProvider
 ) : ViewModel() {
 
     private val _userProfileMutableState = MutableStateFlow(ProfileState())
@@ -49,7 +50,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun uploadAvatar(uri: Uri) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchersProvider.io) {
             uploadAvatarUseCase(uri = uri).collect { response ->
                 when (response) {
                     is NetworkResponse.Error -> {
@@ -78,13 +79,13 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun createImageFile() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchersProvider.io) {
             _imageUriMutableStateFlow.value = fileUtil.createImageFile()
         }
     }
 
     private fun getProfile() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchersProvider.io) {
             getUserUseCase().collect { response ->
                 when (response) {
                     is NetworkResponse.Error -> {
