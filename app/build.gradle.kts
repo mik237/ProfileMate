@@ -48,6 +48,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -115,7 +119,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
     testImplementation("app.cash.turbine:turbine:0.13.0")
     testImplementation("io.mockk:mockk:1.13.12")
-    testImplementation ("io.mockk:mockk-android:1.13.12")
-    testImplementation ("io.mockk:mockk-agent:1.13.12")
+    testImplementation("io.mockk:mockk-android:1.13.12")
+    testImplementation("io.mockk:mockk-agent:1.13.12")
 
 }

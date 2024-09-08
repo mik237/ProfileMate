@@ -1,5 +1,6 @@
 package me.ibrahim.profilemate.data
 
+import android.util.Base64
 import kotlinx.coroutines.flow.first
 import me.ibrahim.profilemate.data.dto.LoginResponse
 import me.ibrahim.profilemate.data.dto.UploadAvatarRequest
@@ -9,8 +10,6 @@ import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.random.Random
 
 
@@ -37,12 +36,11 @@ class ResponseBuilder @Inject constructor(
     }
 
 
-    @OptIn(ExperimentalEncodingApi::class)
     private fun generateToken(): String {
-        val expiryTime = System.currentTimeMillis() + (20 * 60 * 1000)
+        val expiryTime = System.currentTimeMillis() + (20 * 60 * 1000)//20 minutes
         val uniqueId = UUID.randomUUID().toString()
         val tokenData = "$expiryTime:$uniqueId"
-        return Base64.encode(tokenData.toByteArray())
+        return Base64.encodeToString(tokenData.toByteArray(), Base64.DEFAULT)
     }
 
     private fun generateRandomUserId(): String {
