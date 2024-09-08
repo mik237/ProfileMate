@@ -72,8 +72,8 @@ class LoginViewModelTest {
         val saveUserUseCase = mockk<SaveUserUseCase>()
         val loginViewModel = getLoginViewModel(loginUseCase, saveTokenUseCase, saveUserUseCase)
 
-        val testEmail = "ad.mik237@gmail.com"
-        val testPassword = "Abc@123"
+        val testEmail = "test@email.com"
+        val testPassword = "test_pas"
 
         val requestSlot = slot<LoginRequest>()
         val expectedResponse = LoginResponse("123", "token:abcdef")
@@ -149,7 +149,7 @@ class LoginViewModelTest {
         val user = User(
             userId = "userId",
             email = "test@email.com",
-            password = "password@123",
+            password = "test_pas",
             avatarUrl = ""
         )
 
