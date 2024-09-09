@@ -104,4 +104,81 @@ class RemoteRepositoryImplTest {
         assertEquals("mock-user-id", (result[1] as NetworkResponse.Success).data.userid)
         assertEquals("mock-token", (result[1] as NetworkResponse.Success).data.token)
     }
+
+    @Test
+    fun `login should return error for invalid credentials`() = runTest {
+
+        val loginRequest = LoginRequest(email = "", password = "")
+
+        every { connectionManager.isConnected() } returns true
+
+        coEvery { apiManager.handleApi(any<suspend () -> Response<LoginResponse>>()) } coAnswers {
+            val call = args[0] as suspend () -> Response<LoginResponse>
+            val response = call.invoke()
+            if (response.isSuccessful) {
+                NetworkResponse.Success(response.body()!!)
+            } else {
+                NetworkResponse.Error("Email or password cannot be empty", errorCode = response.code())
+            }
+        }
+
+
+        val mockResponse = MockResponse().setResponseCode(401).setBody(
+            """
+                {
+                    "errorMsg": "Email or password cannot be empty",
+                    "errorCode": 401
+                }
+                """.trimIndent()
+        )
+
+        mockWebServer.enqueue(mockResponse)
+
+        val result = remoteRepository.login(loginRequest).toList()
+
+        println(result[0])
+        assertTrue(result[0] is NetworkResponse.Loading)
+        println(result[1])
+        assertTrue(result[1] is NetworkResponse.Error)
+    }
+
+    @Test
+    fun `login should return Network Connection Error if internet is not connected`() = runTest {
+
+        val loginRequest = LoginRequest(email = "test@example.com", password = "password")
+
+        every { connectionManager.isConnected() } returns false
+
+        coEvery { apiManager.handleApi(any<suspend () -> Response<LoginResponse>>()) } coAnswers {
+            val call = args[0] as suspend () -> Response<LoginResponse>
+            val response = call.invoke()
+            if (response.isSuccessful) {
+                NetworkResponse.Success(response.body()!!)
+            } else {
+                NetworkResponse.Error("Error")
+            }
+        }
+
+
+        val mockResponse = MockResponse().setResponseCode(200).setBody(
+            """
+                {
+                    "userid": "mock-user-id",
+                    "token": "mock-token"
+                }
+                """.trimIndent()
+        )
+
+        mockWebServer.enqueue(mockResponse)
+
+        val result = remoteRepository.login(loginRequest).toList()
+
+        println(result[0])
+        assertTrue(result[0] is NetworkResponse.Loading)
+        println(result[1])
+        assertTrue(result[1] is NetworkResponse.Error)
+
+        assertEquals("Network Connection Error!", (result[1] as NetworkResponse.Error).errorMsg)
+        assertEquals(500, (result[1] as NetworkResponse.Error).errorCode)
+    }
 }

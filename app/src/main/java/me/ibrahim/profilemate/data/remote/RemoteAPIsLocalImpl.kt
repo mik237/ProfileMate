@@ -6,6 +6,7 @@ import me.ibrahim.profilemate.data.dto.LoginResponse
 import me.ibrahim.profilemate.data.dto.UploadAvatarRequest
 import me.ibrahim.profilemate.data.dto.UploadAvatarResponse
 import me.ibrahim.profilemate.data.dto.UserProfileResponse
+import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
 
 
@@ -16,11 +17,18 @@ import retrofit2.Response
 
 class RemoteAPIsLocalImpl(val responseBuilder: ResponseBuilder) : RemoteAPIs {
     override suspend fun login(loginRequest: LoginRequest): Response<LoginResponse> {
-        return Response.success(responseBuilder.getLoginResponse())
+        return if (loginRequest.email.isEmpty() || loginRequest.password.isEmpty()) {
+            val errorBody = "Email or password cannot be empty".toResponseBody(null)
+            Response.error(401, errorBody)
+        } else
+            Response.success(responseBuilder.getLoginResponse())
     }
 
     override suspend fun getUserProfile(userid: String): Response<UserProfileResponse> {
-        return Response.success(responseBuilder.getUserProfileResponse())
+        return if (userid.isEmpty()) {
+            val errorBody = "User Not Found".toResponseBody(null)
+            Response.error(401, errorBody)
+        } else Response.success(responseBuilder.getUserProfileResponse())
     }
 
     override suspend fun uploadProfileAvatar(userid: String, uploadAvatarRequest: UploadAvatarRequest): Response<UploadAvatarResponse> {
