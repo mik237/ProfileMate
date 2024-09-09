@@ -83,7 +83,7 @@ class FileUtil @Inject constructor(
     }
 
 
-    suspend fun getBase64EncodedAvatarFromUri(uri: Uri): Pair<String?, Uri?>? {
+    fun getBase64EncodedAvatarFromUri(uri: Uri): Pair<String?, Uri?>? {
 
         val bitmap = try {
             context.contentResolver.openInputStream(uri)?.use { inputStream ->
