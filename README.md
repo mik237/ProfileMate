@@ -14,8 +14,9 @@ ProfileMate is a Kotlin Android app built to demonstrate the implementation of a
 
 Screenshots
 -----------
-<img src="media/screen1.png" width="20%"/>   <img src="media/screen2.png" width="20%"/>   <img src="media/screen3.png" width="20%"/>   <img src="media/screen4.png" width="20%"/>
-<img src="media/screen5.png" width="20%"/>   <img src="media/screen6.png" width="20%"/>   <img src="media/screen7.png" width="20%"/>   <img src="media/screen8.png" width="20%"/>
+<img src="media/screen1.png" width="23%"/>   <img src="media/screen2.png" width="23%"/>   <img src="media/screen3.png" width="23%"/>   <img src="media/screen4.png" width="23%"/>
+
+<img src="media/screen5.png" width="23%"/>   <img src="media/screen6.png" width="23%"/>   <img src="media/screen7.png" width="23%"/>   <img src="media/screen8.png" width="23%"/>
 
 ## Tech Stack
 - **Kotlin**: Programming language used for Android development.
