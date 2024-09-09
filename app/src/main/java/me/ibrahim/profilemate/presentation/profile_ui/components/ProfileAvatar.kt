@@ -3,17 +3,19 @@ package me.ibrahim.profilemate.presentation.profile_ui.components
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,64 +29,81 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import kotlinx.coroutines.Dispatchers
 import me.ibrahim.profilemate.R
+import me.ibrahim.profilemate.presentation.profile_ui.AvatarState
 
 @Composable
-fun ProfileAvatar(avatarUrl: String?, changeAvatar: () -> Unit = {}) {
+fun ProfileAvatar(
+    avatarState: AvatarState,
+    avatarUrl: String?,
+    changeAvatar: () -> Unit = {}
+) {
 
-    Box(Modifier.height(140.dp)) {
-        Box(
+    val context = LocalContext.current
+    val placeholderImage = R.drawable.ic_placeholder
+    val imageLoader = context.imageLoader
+
+    val url by rememberUpdatedState(newValue = avatarUrl)
+
+    val imageRequest = ImageRequest.Builder(context)
+        .crossfade(400)
+        .dispatcher(Dispatchers.IO)
+        .data(url)
+        .memoryCacheKey(url)
+        .diskCacheKey(url)
+        .placeholder(placeholderImage)
+        .error(placeholderImage)
+        .fallback(placeholderImage)
+        .diskCachePolicy(CachePolicy.ENABLED)
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .build()
+
+
+    Box(
+        modifier = Modifier
+            .size(140.dp)
+            .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+
+
+        AsyncImage(
+            model = imageRequest,
+            imageLoader = imageLoader,
             modifier = Modifier
                 .size(140.dp)
-                .clip(CircleShape)
-                .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
+                .clip(CircleShape),
+            contentScale = ContentScale.Fit,
+            contentDescription = stringResource(id = R.string.profile_pic),
+        )
 
-            val context = LocalContext.current
-            val placeholderImage = R.drawable.ic_placeholder
-            val imageRequest = ImageRequest.Builder(context)
-                .data(avatarUrl)
-                .crossfade(400)
-                .dispatcher(Dispatchers.IO)
-                .memoryCacheKey(avatarUrl)
-                .diskCacheKey(avatarUrl)
-                .placeholder(placeholderImage)
-                .error(placeholderImage)
-                .fallback(placeholderImage)
-                .diskCachePolicy(CachePolicy.ENABLED)
-                .memoryCachePolicy(CachePolicy.ENABLED)
-                .build()
-
-            AsyncImage(
-                model = imageRequest,
-                imageLoader = context.imageLoader,
+        if (avatarState is AvatarState.Uploading) {
+            CircularProgressIndicator(
                 modifier = Modifier
-                    .size(140.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop,
-                contentDescription = stringResource(id = R.string.profile_pic),
+                    .size(139.dp),
+                strokeWidth = 2.dp,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
 
-
-        IconButton(
-            onClick = changeAvatar,
-            modifier = Modifier
-                .size(35.dp)
-                .padding(2.dp)
-                .clip(CircleShape)
-                .align(Alignment.BottomEnd),
-            colors = IconButtonDefaults.iconButtonColors(MaterialTheme.colorScheme.primary),
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Edit,
-                contentDescription = stringResource(id = R.string.edit_profile_pic),
+        if (avatarState !is AvatarState.Uploading) {
+            IconButton(
+                onClick = changeAvatar,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(5.dp),
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
+                    .size(35.dp)
+                    .padding(2.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.BottomEnd),
+                colors = IconButtonDefaults.iconButtonColors(MaterialTheme.colorScheme.primary),
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Edit,
+                    contentDescription = stringResource(id = R.string.edit_profile_pic),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(5.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
-
 }

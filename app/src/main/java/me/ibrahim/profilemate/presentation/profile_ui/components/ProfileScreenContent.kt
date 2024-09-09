@@ -25,6 +25,7 @@ fun ProfileScreenContent(userProfileState: ProfileState, changeAvatar: () -> Uni
         Spacer(modifier = Modifier.padding(top = 25.dp))
 
         ProfileAvatar(
+            avatarState = userProfileState.avatarState,
             avatarUrl = userProfileState.user?.avatarUrl,
             changeAvatar = changeAvatar
         )
