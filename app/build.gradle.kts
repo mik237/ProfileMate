@@ -49,9 +49,7 @@ android {
         }
     }
 
-    testOptions {
-        unitTests.isReturnDefaultValues = true
-    }
+
 }
 
 dependencies {
@@ -75,51 +73,51 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
 
     //Splash Api
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation(libs.androidx.core.splashscreen)
 
     //Compose Navigation
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation(libs.androidx.navigation.compose)
 
     //Dagger Hilt
-    implementation("com.google.dagger:hilt-android:2.49")
-    kapt("com.google.dagger:hilt-compiler:2.48")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
 
     //Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
     //Coil
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation(libs.coil.compose)
 
     // MockWebServer
-    implementation("com.squareup.okhttp3:mockwebserver:4.12.0")
-    implementation("com.squareup.okhttp3:okhttp:4.9.3")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    implementation(libs.mockwebserver)
+    implementation(libs.okhttp)
+    testImplementation(libs.mockwebserver)
 
     //compose viewmodel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.5")
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     //Encrypted shared preferences
-    implementation("androidx.security:security-crypto:1.1.0-alpha03")
+    implementation(libs.androidx.security.crypto)
 
     //Datastore
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation(libs.androidx.datastore.preferences)
 
     // accompanist permission
-    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+    implementation(libs.accompanist.permissions)
 
     //image compressor
 //    implementation ("id.zelory:compressor:3.0.1")
 
 
     testImplementation(libs.junit)
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-    testImplementation("app.cash.turbine:turbine:0.13.0")
-    testImplementation("io.mockk:mockk:1.13.12")
-    testImplementation("io.mockk:mockk-android:1.13.12")
-    testImplementation("io.mockk:mockk-agent:1.13.12")
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.android)
+    testImplementation(libs.mockk.agent)
 
 }
