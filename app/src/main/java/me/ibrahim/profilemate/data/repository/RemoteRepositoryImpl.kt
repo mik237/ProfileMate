@@ -61,11 +61,14 @@ class RemoteRepositoryImpl(
 
         val response = withNetworkCheck(connectionManager) {
             withActiveSession(sessionManager) {
-                val bitmap = fileUtil.getBitmapFromUri(uri)
-                val compressedFile = bitmap?.let { fileUtil.compressBitmap(it) }
+/*                val bitmap = fileUtil.getBitmapFromUri(uri)
+                val compressedFile = bitmap?.let { fileUtil.bitmapToFile(it) }
                 val compressedFileUri = compressedFile?.let { fileUtil.getFileUri(it) }
-                val base64encodedBitmap = bitmap?.let { fileUtil.convertBitmapToBase64(it) } ?: ""
+                val base64encodedBitmap = bitmap?.let { fileUtil.convertBitmapToBase64(it) } ?: ""*/
 
+                val base64encodedBitmapResult = fileUtil.getBase64EncodedAvatarFromUri(uri)
+                val base64encodedBitmap = base64encodedBitmapResult?.first ?: ""
+                val compressedFileUri = base64encodedBitmapResult?.second
                 val uploadAvatarRequest = UploadAvatarRequest(avatar = base64encodedBitmap, avatarUrl = compressedFileUri.toString())
 
                 apiManager.handleApi { remoteAPIs.uploadProfileAvatar(userid = userId, uploadAvatarRequest = uploadAvatarRequest) }
