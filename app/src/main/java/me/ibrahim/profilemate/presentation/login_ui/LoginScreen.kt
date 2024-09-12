@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -47,7 +48,6 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var showPassword by remember { mutableStateOf(false) }
 
     val loginState by loginVM.loginStateFlow.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
@@ -62,76 +62,41 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
     ) {
         Text(
             text = "Login",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            fontSize = 40.sp
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold), fontSize = 40.sp
         )
 
         Spacer(modifier = Modifier.padding(20.dp))
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text(text = stringResource(id = R.string.email)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 22.dp),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next
-            ),
-            shape = RoundedCornerShape(8.dp),
+        EmailInputField(
+            provideEmail = { email },
+            onEmailChange = { email = it }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        OutlinedTextField(
-            value = password, onValueChange = { password = it },
-            label = { Text(text = stringResource(id = R.string.password)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 22.dp),
-            singleLine = true,
-            shape = RoundedCornerShape(8.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Password
-            ),
-            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-            visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
+        PasswordInputField(
+            providePassword = { password },
+            onPasswordChanged = { password = it },
+            onKeyBoard = { focusManager.clearFocus() }
+        )
 
-                val image = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                val description = if (showPassword) stringResource(id = R.string.hide_password) else stringResource(id = R.string.show_password)
+        Spacer(modifier = Modifier.height(20.dp))
 
-                IconButton(onClick = { showPassword = showPassword.not() }) {
-                    Icon(imageVector = image, contentDescription = description)
-                }
+        LoginButton(
+            provideLoginState = { loginState },
+            provideEmail = { email },
+            providePassword = { password },
+            onClick = {
+                focusManager.clearFocus()
+                loginVM.onEvent(LoginScreenEvent.LoginClicked(email, password))
             }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 22.dp)
-                .height(50.dp),
-            enabled = (loginState !is LoginStates.Loading) && (email.isNotEmpty() && password.isNotEmpty()),
-            onClick = {
-                focusManager.clearFocus()
-                loginVM.onEvent(LoginScreenEvent.LoginClicked(email, password))
-            },
-            shape = RoundedCornerShape(50)
-        ) {
-            Text(text = stringResource(id = R.string.login))
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
         if (loginState is LoginStates.Error) {
             Text(
-                text = "${stringResource(id = R.string.error)}: ${(loginState as LoginStates.Error).error}",
-                color = MaterialTheme.colorScheme.error
+                text = "${stringResource(id = R.string.error)}: ${(loginState as LoginStates.Error).error}", color = MaterialTheme.colorScheme.error
             )
         }
         if (loginState is LoginStates.Loading) {
@@ -141,5 +106,78 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
             loginVM.onEvent(LoginScreenEvent.SaveUser((loginState as LoginStates.Success).user))
             loginVM.onEvent(LoginScreenEvent.SaveToken((loginState as LoginStates.Success).token))
         }
+    }
+}
+
+@Composable
+fun EmailInputField(
+    provideEmail: () -> String,
+    onEmailChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = provideEmail(),
+        onValueChange = onEmailChange,
+        label = { Text(text = stringResource(id = R.string.email)) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 22.dp),
+        singleLine = true,
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Next
+        ),
+        shape = RoundedCornerShape(8.dp),
+    )
+}
+
+@Composable
+fun PasswordInputField(
+    providePassword: () -> String,
+    onPasswordChanged: (String) -> Unit,
+    onKeyBoard: KeyboardActionScope.() -> Unit
+) {
+
+    var showPassword by remember { mutableStateOf(false) }
+
+    OutlinedTextField(value = providePassword(),
+        onValueChange = onPasswordChanged,
+        label = { Text(text = stringResource(id = R.string.password)) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 22.dp),
+        singleLine = true,
+        shape = RoundedCornerShape(8.dp),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Done, keyboardType = KeyboardType.Password
+        ),
+        keyboardActions = KeyboardActions(onDone = onKeyBoard),
+        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = {
+
+            val image = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+            val description = if (showPassword) stringResource(id = R.string.hide_password) else stringResource(id = R.string.show_password)
+
+            IconButton(onClick = { showPassword = showPassword.not() }) {
+                Icon(imageVector = image, contentDescription = description)
+            }
+        })
+}
+
+@Composable
+fun LoginButton(
+    provideLoginState: () -> LoginStates,
+    provideEmail: () -> String,
+    providePassword: () -> String,
+    onClick: () -> Unit
+) {
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 22.dp)
+            .height(50.dp),
+        enabled = (provideLoginState() !is LoginStates.Loading) && (provideEmail().isNotEmpty() && providePassword().isNotEmpty()),
+        onClick = onClick,
+        shape = RoundedCornerShape(50)
+    ) {
+        Text(text = stringResource(id = R.string.login))
     }
 }
