@@ -9,6 +9,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -69,11 +71,13 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 4.dp, end = 4.dp), horizontalAlignment = Alignment.CenterHorizontally
+            .padding(start = 4.dp, end = 4.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         ProfileScreenContent(
-            userProfileState = userProfileState,
+            provideUserProfileState = { userProfileState },
             changeAvatar = { showBottomSheet = showBottomSheet.not() }
         )
 
