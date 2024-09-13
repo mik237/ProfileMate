@@ -17,12 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.compose.NavHost
 import dagger.hilt.android.AndroidEntryPoint
 import me.ibrahim.profilemate.R
-import me.ibrahim.profilemate.presentation.login_ui.LoginScreen
 import me.ibrahim.profilemate.presentation.navigation.NavGraph
-import me.ibrahim.profilemate.presentation.navigation.Routes
 import me.ibrahim.profilemate.ui.theme.ProfileMateTheme
 
 @AndroidEntryPoint

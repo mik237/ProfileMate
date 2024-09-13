@@ -8,10 +8,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager
 import me.ibrahim.profilemate.domain.models.User
 import me.ibrahim.profilemate.utils.AppConstants
@@ -57,8 +55,8 @@ class LocalDataStoreManagerImpl(
         return readUser().firstOrNull()?.userId ?: ""
     }
 
-    override fun getToken(): String? = runBlocking {
-        context.dataStore.data.map { it[PreferencesKeys.KEY_TOKEN] }.firstOrNull()
+    override suspend fun getToken(): String? {
+        return context.dataStore.data.map { it[PreferencesKeys.KEY_TOKEN] }.firstOrNull()
     }
 
 }

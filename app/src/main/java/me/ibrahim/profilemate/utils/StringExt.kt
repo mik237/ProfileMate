@@ -5,8 +5,8 @@ import java.security.MessageDigest
 
 
 fun String.sha256(): String {
-    val digest = MessageDigest.getInstance(AppConstants.SHA_256)
-    val bytes = digest.digest(this.trim().lowercase().toByteArray(Charsets.UTF_8))
+    val md = MessageDigest.getInstance(AppConstants.SHA_256)
+    val bytes = md.digest(this.trim().lowercase().toByteArray(Charsets.UTF_8))
     return bytes.fold("") { str, it -> str + "%02x".format(it) }
 }
 

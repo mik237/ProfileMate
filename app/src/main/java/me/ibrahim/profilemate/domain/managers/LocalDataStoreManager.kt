@@ -11,7 +11,7 @@ interface LocalDataStoreManager {
     fun readToken(): Flow<String>
     fun readUser(): Flow<User?>
 
-    fun getToken(): String?
+    suspend fun getToken(): String?
 
     suspend fun getUserId(): String
 }

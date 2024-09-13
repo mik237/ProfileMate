@@ -6,8 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.ibrahim.profilemate.data.dto.LoginRequest
 import me.ibrahim.profilemate.data.remote.NetworkResponse
@@ -56,18 +54,13 @@ class LoginViewModel @Inject constructor(
 
     fun login(loginRequest: LoginRequest) {
 
-        viewModelScope.launch(dispatchersProvider.main) {
+        viewModelScope.launch(dispatchersProvider.io) {
             _loginMutableStateFlow.value = LoginStates.Loading
 
             loginUseCase(loginRequest)
-                .flowOn(dispatchersProvider.io)
                 .catch { throwable ->
                     _loginMutableStateFlow.value = LoginStates.Error(error = throwable.localizedMessage ?: "Unknown Error")
-                }
-                .map {
-                    it
-                }
-                .collect { response ->
+                }.collect { response ->
                     when (response) {
                         is NetworkResponse.Error -> {
                             _loginMutableStateFlow.value = LoginStates.Error(error = response.errorMsg ?: "Unknown Error")
