@@ -5,9 +5,7 @@ import me.ibrahim.profilemate.data.dto.LoginResponse
 import me.ibrahim.profilemate.data.dto.UploadAvatarRequest
 import me.ibrahim.profilemate.data.dto.UploadAvatarResponse
 import me.ibrahim.profilemate.data.dto.UserProfileResponse
-import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
-import kotlin.math.log
 
 
 /**
