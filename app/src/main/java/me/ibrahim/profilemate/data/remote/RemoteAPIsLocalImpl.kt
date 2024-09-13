@@ -1,6 +1,5 @@
 package me.ibrahim.profilemate.data.remote
 
-import me.ibrahim.profilemate.data.ResponseBuilder
 import me.ibrahim.profilemate.data.dto.LoginRequest
 import me.ibrahim.profilemate.data.dto.LoginResponse
 import me.ibrahim.profilemate.data.dto.UploadAvatarRequest
@@ -8,6 +7,7 @@ import me.ibrahim.profilemate.data.dto.UploadAvatarResponse
 import me.ibrahim.profilemate.data.dto.UserProfileResponse
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
+import kotlin.math.log
 
 
 /**
@@ -16,19 +16,13 @@ import retrofit2.Response
  */
 
 class RemoteAPIsLocalImpl(val responseBuilder: ResponseBuilder) : RemoteAPIs {
+
     override suspend fun login(loginRequest: LoginRequest): Response<LoginResponse> {
-        return if (loginRequest.email.isEmpty() || loginRequest.password.isEmpty()) {
-            val errorBody = "Email or password cannot be empty".toResponseBody(null)
-            Response.error(401, errorBody)
-        } else
-            Response.success(responseBuilder.getLoginResponse())
+        return responseBuilder.getLoginResponse(loginRequest)
     }
 
     override suspend fun getUserProfile(userid: String): Response<UserProfileResponse> {
-        return if (userid.isEmpty()) {
-            val errorBody = "User Not Found".toResponseBody(null)
-            Response.error(401, errorBody)
-        } else Response.success(responseBuilder.getUserProfileResponse())
+        return responseBuilder.getUserProfileResponse(userid = userid)
     }
 
     override suspend fun uploadProfileAvatar(userid: String, uploadAvatarRequest: UploadAvatarRequest): Response<UploadAvatarResponse> {

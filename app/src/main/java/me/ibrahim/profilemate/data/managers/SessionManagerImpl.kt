@@ -6,7 +6,7 @@ import me.ibrahim.profilemate.domain.managers.SessionManager
 
 class SessionManagerImpl(val localDataStoreManager: LocalDataStoreManager) : SessionManager {
 
-    override fun isActiveSession(): Boolean {
+    override suspend fun isActiveSession(): Boolean {
         val token = localDataStoreManager.getToken()
         token?.let {
             val decodedToken = String(Base64.decode(it, Base64.DEFAULT))

@@ -57,8 +57,8 @@ class LocalDataStoreManagerImpl(
         return readUser().firstOrNull()?.userId ?: ""
     }
 
-    override fun getToken(): String? = runBlocking {
-        context.dataStore.data.map { it[PreferencesKeys.KEY_TOKEN] }.firstOrNull()
+    override suspend fun getToken(): String? {
+        return context.dataStore.data.map { it[PreferencesKeys.KEY_TOKEN] }.firstOrNull()
     }
 
 }

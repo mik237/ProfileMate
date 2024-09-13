@@ -6,7 +6,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import me.ibrahim.profilemate.data.ResponseBuilder
+import me.ibrahim.profilemate.data.remote.ResponseBuilder
 import me.ibrahim.profilemate.data.managers.ApiManagerImpl
 import me.ibrahim.profilemate.data.remote.AuthInterceptor
 import me.ibrahim.profilemate.data.remote.RemoteAPIs

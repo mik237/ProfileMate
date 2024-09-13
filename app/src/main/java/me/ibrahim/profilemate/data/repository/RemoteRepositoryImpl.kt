@@ -30,8 +30,8 @@ class RemoteRepositoryImpl(
 
         emit(NetworkResponse.Loading())
 
-        //adding a delay to 500 milliseconds to show waiting of a network call
-        delay(500L)
+        //adding a delay to 300 milliseconds to show waiting of a network call
+        delay(300L)
 
         val response = withNetworkCheck(connectionManager) { apiManager.handleApi { remoteAPIs.login(loginRequest) } }
 

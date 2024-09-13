@@ -26,14 +26,9 @@ class ApiManagerImpl(private val gson: Gson) : ApiManager {
                 }
 
                 !response.isSuccessful && errorBody != null -> {
-                    @Suppress("BlockingMethodInNonBlockingContext")
-                    val error = withContext(Dispatchers.Main) {
-                        errorBody.string()
-                    }
-                    val err = gson.fromJsonSafe(error, JsonObject::class.java)
-                    val msg = err?.get("error")?.asJsonObject?.get("message")?.asString ?: ""
-                    val code = err?.get("error")?.asJsonObject?.get("code")?.asInt
-                    NetworkResponse.Error(errorMsg = msg, errorCode = code)
+                    val errorMsg = errorBody.string()
+                    val code = response.code()
+                    NetworkResponse.Error(errorMsg = errorMsg, errorCode = code)
                 }
 
                 else -> {
