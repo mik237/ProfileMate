@@ -67,7 +67,7 @@ object NetworkModule {
     fun provideApiManager(
         gson: Gson
     ): ApiManager {
-        return ApiManagerImpl(gson = gson)
+        return ApiManagerImpl()
     }
 
     @Provides

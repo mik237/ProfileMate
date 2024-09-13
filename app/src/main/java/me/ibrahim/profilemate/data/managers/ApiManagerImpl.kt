@@ -1,12 +1,11 @@
 package me.ibrahim.profilemate.data.managers
 
-import com.google.gson.Gson
 import me.ibrahim.profilemate.data.remote.NetworkResponse
 import me.ibrahim.profilemate.domain.managers.ApiManager
 import retrofit2.HttpException
 import retrofit2.Response
 
-class ApiManagerImpl(private val gson: Gson) : ApiManager {
+class ApiManagerImpl : ApiManager {
 
     override suspend fun <T : Any> handleApi(
         call: suspend () -> Response<T>
