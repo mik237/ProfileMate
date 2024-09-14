@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import me.ibrahim.profilemate.data.dto.LoginRequest
 import me.ibrahim.profilemate.data.dto.LoginResponse
+import me.ibrahim.profilemate.data.dto.UserProfileResponse
 import me.ibrahim.profilemate.data.remote.NetworkResponse
 import me.ibrahim.profilemate.data.remote.RemoteAPIs
 import me.ibrahim.profilemate.domain.managers.ApiManager
@@ -190,8 +191,8 @@ class RemoteRepositoryImplTest {
         every { connectionManager.isConnected() } returns true
         coEvery { sessionManager.isActiveSession() } returns false
 
-        coEvery { apiManager.handleApi(any<suspend () -> Response<LoginResponse>>()) } coAnswers {
-            val call = args[0] as suspend () -> Response<LoginResponse>
+        coEvery { apiManager.handleApi(any<suspend () -> Response<UserProfileResponse>>()) } coAnswers {
+            val call = args[0] as suspend () -> Response<UserProfileResponse>
             val response = call.invoke()
             if (response.isSuccessful) {
                 NetworkResponse.Success(response.body()!!)
