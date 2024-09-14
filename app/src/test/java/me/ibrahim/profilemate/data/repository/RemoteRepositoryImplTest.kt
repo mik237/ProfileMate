@@ -15,6 +15,7 @@ import me.ibrahim.profilemate.domain.managers.ConnectionManager
 import me.ibrahim.profilemate.domain.managers.SessionManager
 import me.ibrahim.profilemate.domain.repository.RemoteRepository
 import me.ibrahim.profilemate.utils.FileUtil
+import me.ibrahim.profilemate.utils.HttpCodes
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -143,7 +144,7 @@ class RemoteRepositoryImplTest {
     }
 
     @Test
-    fun `login should return Network Connection Error if internet is not connected`() = runTest {
+    fun `login should return 'Network Connection Error' if internet is not connected`() = runTest {
 
         val loginRequest = LoginRequest(email = "test@example.com", password = "password")
 
@@ -180,5 +181,44 @@ class RemoteRepositoryImplTest {
 
         assertEquals("Network Connection Error!", (result[1] as NetworkResponse.Error).errorMsg)
         assertEquals(500, (result[1] as NetworkResponse.Error).errorCode)
+    }
+
+
+    @Test
+    fun `getUser should return 'Session Expire' if token is expired`() = runTest {
+
+        every { connectionManager.isConnected() } returns true
+        coEvery { sessionManager.isActiveSession() } returns false
+
+        coEvery { apiManager.handleApi(any<suspend () -> Response<LoginResponse>>()) } coAnswers {
+            val call = args[0] as suspend () -> Response<LoginResponse>
+            val response = call.invoke()
+            if (response.isSuccessful) {
+                NetworkResponse.Success(response.body()!!)
+            } else {
+                NetworkResponse.Error("Error")
+            }
+        }
+
+        val mockResponse = MockResponse().setResponseCode(HttpCodes.SESSION_EXPIRED.code).setBody(
+            """
+                {
+                    "email": "test@example.com",
+                    "avatar_url": ""
+                }
+                """.trimIndent()
+        )
+
+        mockWebServer.enqueue(mockResponse)
+
+        val result = remoteRepository.getUser("123").toList()
+
+        println(result[0])
+        assertTrue(result[0] is NetworkResponse.Loading)
+        println(result[1])
+        assertTrue(result[1] is NetworkResponse.Error)
+
+        assertEquals("Session Expired!", (result[1] as NetworkResponse.Error).errorMsg)
+        assertEquals(419, (result[1] as NetworkResponse.Error).errorCode)
     }
 }
