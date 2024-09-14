@@ -89,9 +89,5 @@ fun LoginScreen(loginVM: LoginViewModel = hiltViewModel()) {
         if (loginState is LoginStates.Loading) {
             CircularProgressIndicator()
         }
-        if (loginState is LoginStates.Success) {
-            loginVM.onEvent(LoginScreenEvent.SaveUser((loginState as LoginStates.Success).user))
-            loginVM.onEvent(LoginScreenEvent.SaveToken((loginState as LoginStates.Success).token))
-        }
     }
 }

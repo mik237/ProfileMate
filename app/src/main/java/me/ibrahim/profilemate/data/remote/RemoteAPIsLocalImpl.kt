@@ -10,7 +10,7 @@ import retrofit2.Response
 
 /**
  * implementing this class to provide mock responses
- * in real code, this implementation is usually provided retrofit.
+ * in real code, this implementation is usually provided by retrofit.
  */
 
 class RemoteAPIsLocalImpl(val responseBuilder: ResponseBuilder) : RemoteAPIs {

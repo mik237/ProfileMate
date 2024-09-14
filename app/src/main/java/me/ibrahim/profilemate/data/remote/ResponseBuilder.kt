@@ -30,7 +30,7 @@ class ResponseBuilder @Inject constructor(
 
         return if (validEmail.not()) {
             val errorBody = "Invalid Email".toResponseBody("text/plain".toMediaTypeOrNull())
-            Response.error(400, errorBody)
+            Response.error(400, errorBody) //400 - Bad Request
         } else {
             val userId = generateRandomUserId()
             val token = generateToken()
@@ -71,7 +71,7 @@ class ResponseBuilder @Inject constructor(
         val expiryTime = System.currentTimeMillis() + (20 * 60 * 1000)//20 minutes
         val uniqueId = UUID.randomUUID().toString()
         val tokenData = "$expiryTime:$uniqueId"
-        return Base64.encodeToString(tokenData.toByteArray(), Base64.DEFAULT)
+        return Base64.encodeToString(tokenData.toByteArray(), Base64.NO_WRAP)
     }
 
     private fun generateRandomUserId(): String {

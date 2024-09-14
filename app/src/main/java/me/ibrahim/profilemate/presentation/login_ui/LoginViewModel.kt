@@ -34,28 +34,13 @@ class LoginViewModel @Inject constructor(
             is LoginScreenEvent.LoginClicked -> {
                 login(LoginRequest(email = event.email, password = event.password))
             }
-
-            is LoginScreenEvent.SaveToken -> saveToken(event.token)
-            is LoginScreenEvent.SaveUser -> saveUser(event.user)
         }
     }
 
-    private fun saveUser(user: User) {
-        viewModelScope.launch(dispatchersProvider.io) {
-            saveUserUseCase(user)
-        }
-    }
-
-    private fun saveToken(token: String) {
-        viewModelScope.launch(dispatchersProvider.io) {
-            saveTokenUseCase(token)
-        }
-    }
 
     fun login(loginRequest: LoginRequest) {
 
         viewModelScope.launch(dispatchersProvider.io) {
-            _loginMutableStateFlow.value = LoginStates.Loading
 
             loginUseCase(loginRequest)
                 .catch { throwable ->
@@ -78,6 +63,8 @@ class LoginViewModel @Inject constructor(
                                 password = loginRequest.password,
                                 avatarUrl = loginRequest.email.getGravatarUrl()
                             )
+                            saveUserUseCase(user)
+                            saveTokenUseCase(loginResponse.token)
                             _loginMutableStateFlow.value = LoginStates.Success(token = loginResponse.token, user = user)
                         }
                     }
