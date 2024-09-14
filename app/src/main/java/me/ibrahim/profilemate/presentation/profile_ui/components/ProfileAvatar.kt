@@ -81,7 +81,7 @@ fun ProfileAvatar(
                 modifier = Modifier
                     .size(138.dp),
                 strokeWidth = 2.dp,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.inversePrimary
             )
         }
 

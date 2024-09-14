@@ -58,8 +58,7 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
     val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
-        profileVM.onEvent(ProfileEvents.GetProfileFromRemote)
-        profileVM.onEvent(ProfileEvents.ReadProfileFromLocal)
+        profileVM.onEvent(ProfileEvents.GetProfile)
         profileVM.onEvent(ProfileEvents.CreateImageFile)
 
         profileVM.errorSharedFlow.collectLatest { errorMsg ->

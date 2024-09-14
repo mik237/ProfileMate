@@ -5,7 +5,7 @@ import me.ibrahim.profilemate.domain.managers.LocalDataStoreManager
 import me.ibrahim.profilemate.domain.models.User
 import javax.inject.Inject
 
-class ReadUserUseCase @Inject constructor(val localDataStoreManager: LocalDataStoreManager) {
+class ReadLocalUserUseCase @Inject constructor(val localDataStoreManager: LocalDataStoreManager) {
     operator fun invoke(): Flow<User?> {
         return localDataStoreManager.readUser()
     }
