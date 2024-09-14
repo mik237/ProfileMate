@@ -9,7 +9,7 @@ class SessionManagerImpl(val localDataStoreManager: LocalDataStoreManager) : Ses
     override suspend fun isActiveSession(): Boolean {
         val token = localDataStoreManager.getToken()
         token?.let {
-            val decodedToken = String(Base64.decode(it, Base64.DEFAULT))
+            val decodedToken = String(Base64.decode(it, Base64.NO_WRAP))
             val tokenParts = decodedToken.split(":")
             val expiryTime = tokenParts[0].toLongOrNull() ?: return false
             val currentTime = System.currentTimeMillis()
