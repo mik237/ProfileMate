@@ -24,6 +24,6 @@ class RemoteAPIsLocalImpl(val responseBuilder: ResponseBuilder) : RemoteAPIs {
     }
 
     override suspend fun uploadProfileAvatar(userid: String, uploadAvatarRequest: UploadAvatarRequest): Response<UploadAvatarResponse> {
-        return Response.success(responseBuilder.getUploadAvatarResponse(uploadAvatarRequest))
+        return responseBuilder.getUploadAvatarResponse(uploadAvatarRequest)
     }
 }

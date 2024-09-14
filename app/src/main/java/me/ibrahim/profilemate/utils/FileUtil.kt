@@ -2,25 +2,25 @@ package me.ibrahim.profilemate.utils
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.util.Base64
 import androidx.core.content.FileProvider
+import coil.imageLoader
+import coil.request.ImageRequest
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
+private const val MAX_SIZE_BYTES = 1 * 1024 * 1024 // 1 MB in bytes
 
 @Singleton
-class FileUtil @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
-
-    private val MAX_SIZE_BYTES = 1 * 1024 * 1024 // 1 MB in bytes
-
+class FileUtil @Inject constructor(@ApplicationContext private val context: Context) {
 
     fun createImageFile(): Uri {
         val fileName = "profile_pic.jpg"
@@ -31,77 +31,33 @@ class FileUtil @Inject constructor(
         return FileProvider.getUriForFile(context, "${context.packageName}.provider", imageFile)
     }
 
-    fun getBitmapFromUri(uri: Uri): Bitmap? {
-        return try {
-            context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                BitmapFactory.decodeStream(inputStream)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
+
+    // Load the image, resize it, convert to Bitmap, and return Base64 string & local Uri
+    suspend fun loadImageAndConvertToBase64(uri: Uri): Pair<String?, String?> = suspendCoroutine {
+        val imageLoader = context.imageLoader
+        val request = ImageRequest.Builder(context)
+            .data(uri)
+            .size(600)
+            .target { drawable ->
+                val bitmap = (drawable as BitmapDrawable).bitmap
+                val base64 = bitmapToBase64(bitmap)
+                val fileUri = saveImageToInternalStorage(bitmap)
+                it.resume(Pair(base64, fileUri.toString()))
+            }.build()
+
+        imageLoader.enqueue(request)
     }
 
-    fun bitmapToFile(bitmap: Bitmap): File? {
-        return try {
-            val file = File(context.cacheDir, "compressed_pic.jpg")
-            if (file.exists().not()) {
-                file.createNewFile()
-            }
-            FileOutputStream(file).use { outputStream ->
-                // Compress the bitmap and save to the output stream
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
-            }
-            file
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
-    fun getFileUri(file: File): Uri? {
-        return try {
-            val fileUri = FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.provider",
-                file
-            )
-            fileUri.buildUpon()
-                .appendQueryParameter("timeStamp", System.currentTimeMillis().toString())
-                .build()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
-    fun convertBitmapToBase64(bitmap: Bitmap): String {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-        val byteArray = byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.DEFAULT)
-    }
-
-
-    fun getBase64EncodedAvatarFromUri(uri: Uri): Pair<String?, Uri?>? {
-
-        val bitmap = try {
-            context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                BitmapFactory.decodeStream(inputStream)
-            }
-        } catch (e: Exception) {
-            null
-        }
-
+    private fun bitmapToBase64(bitmap: Bitmap?): String? {
         bitmap?.let {
             var resizedBitmap = it
-            val quality = 100
+            val quality = 90
             var base64String: String?
 
             do {
                 // Compress the bitmap into a ByteArrayOutputStream
                 val outputStream = ByteArrayOutputStream()
-                resizedBitmap.compress(Bitmap.CompressFormat.PNG, quality, outputStream) // Use JPEG for lossy compression
+                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream) // Use JPEG for lossy compression
                 val byteArray = outputStream.toByteArray()
 
                 base64String = Base64.encodeToString(byteArray, Base64.DEFAULT)
@@ -110,20 +66,35 @@ class FileUtil @Inject constructor(
                 }
 
                 // Reduce the size of the bitmap if the Base64 string is too large
-                // Reduce the bitmap dimensions by 80% and decrease quality
-                val width = (resizedBitmap.width * 0.8).toInt()
-                val height = (resizedBitmap.height * 0.8).toInt()
+                // Reduce the bitmap dimensions by 90% and decrease quality
+                val width = (resizedBitmap.width * 0.9).toInt()
+                val height = (resizedBitmap.height * 0.9).toInt()
                 resizedBitmap = Bitmap.createScaledBitmap(resizedBitmap, width, height, true)
 
             } while (byteArray.size > MAX_SIZE_BYTES)
-
-            val file = bitmapToFile(resizedBitmap)
-            val fileUri = file?.let { f -> getFileUri(f) }
-            return Pair(base64String, fileUri)
+            return base64String
         }
-
         return null
     }
+
+    private fun saveImageToInternalStorage(bitmap: Bitmap): Uri? {
+        return try {
+            val file = File(context.cacheDir, "profile_pic.jpg")
+            if (file.exists().not()) {
+                file.createNewFile()
+            }
+            FileOutputStream(file).use { outputStream ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            }
+            Uri.fromFile(file).buildUpon()
+                .appendQueryParameter("timeStamp", System.currentTimeMillis().toString())
+                .build()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
     /*
         suspend fun compressImage(file: File): File {
             return Compressor.compress(context, file) {

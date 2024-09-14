@@ -30,7 +30,7 @@ class ResponseBuilder @Inject constructor(
 
         return if (validEmail.not()) {
             val errorBody = "Invalid Email".toResponseBody("text/plain".toMediaTypeOrNull())
-            Response.error(401, errorBody)
+            Response.error(400, errorBody)
         } else {
             val userId = generateRandomUserId()
             val token = generateToken()
@@ -40,8 +40,8 @@ class ResponseBuilder @Inject constructor(
 
     suspend fun getUserProfileResponse(userid: String): Response<UserProfileResponse> {
         return if (userid.isEmpty()) {
-            val errorBody = "User Not Found".toResponseBody(null)
-            Response.error(401, errorBody)
+            val errorBody = "User Not Found".toResponseBody("text/plain".toMediaTypeOrNull())
+            Response.error(404, errorBody)
         } else {
 
             val user = localDataStoreManager.readUser().first()
@@ -56,9 +56,14 @@ class ResponseBuilder @Inject constructor(
 
     }
 
-    suspend fun getUploadAvatarResponse(uploadAvatarRequest: UploadAvatarRequest): UploadAvatarResponse {
-        //returning the url in the response.
-        return UploadAvatarResponse(avatarUrl = uploadAvatarRequest.avatarUrl)
+    fun getUploadAvatarResponse(uploadAvatarRequest: UploadAvatarRequest): Response<UploadAvatarResponse> {
+        return if (uploadAvatarRequest.avatar.isEmpty()) {
+            val errorBody = "Avatar Upload Failed".toResponseBody("text/plain".toMediaTypeOrNull())
+            Response.error(404, errorBody)
+        } else {
+            //returning the url in the response.
+            Response.success(UploadAvatarResponse(avatarUrl = uploadAvatarRequest.avatarUrl))
+        }
     }
 
 

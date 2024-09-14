@@ -58,8 +58,8 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
     val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
-        profileVM.onEvent(ProfileEvents.GetProfileFromRemote)
-        profileVM.onEvent(ProfileEvents.ReadProfileFromLocal)
+        profileVM.onEvent(ProfileEvents.GetProfile)
+        profileVM.onEvent(ProfileEvents.CreateImageFile)
 
         profileVM.errorSharedFlow.collectLatest { errorMsg ->
             errorMsg?.let { err ->
@@ -110,7 +110,6 @@ fun handleImagePickerOptions(
     when (imagePickerOption) {
         ImagePickerOption.CAMERA -> {
             scope.launch {
-                profileVM.onEvent(ProfileEvents.CreateImageFile)
                 if (cameraPermissionState.status.isGranted.not()) {
                     cameraPermissionState.launchPermissionRequest()
                 } else {

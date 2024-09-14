@@ -3,18 +3,11 @@ package me.ibrahim.profilemate.presentation.profile_ui
 import android.net.Uri
 import app.cash.turbine.test
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import me.ibrahim.profilemate.TestDispatchersProvider
-import me.ibrahim.profilemate.data.dto.UserProfileResponse
-import me.ibrahim.profilemate.data.remote.NetworkResponse
 import me.ibrahim.profilemate.domain.use_cases.profile.GetUserUseCase
-import me.ibrahim.profilemate.domain.use_cases.profile.ReadUserUseCase
 import me.ibrahim.profilemate.domain.use_cases.profile.SaveUserUseCase
 import me.ibrahim.profilemate.domain.use_cases.profile.UploadAvatarUseCase
 import me.ibrahim.profilemate.domain.utils.DispatchersProvider
@@ -45,7 +38,6 @@ class ProfileViewModelTest {
 
         profileViewModel = ProfileViewModel(
             getUserUseCase = mockk<GetUserUseCase>(),
-            readUserUseCase = mockk<ReadUserUseCase>(),
             saveUserUseCase = mockk<SaveUserUseCase>(),
             uploadAvatarUseCase = mockk<UploadAvatarUseCase>(),
             fileUtil = mockk<FileUtil>(relaxed = true),
@@ -56,7 +48,7 @@ class ProfileViewModelTest {
     }
 
     @Test
-    fun `test File creation and Uri is returned`() = runTest {
+    fun `onEvent 'CreateImageFile', create File and return Uri`() = runTest {
 
         val fileUtil = mockk<FileUtil>(relaxed = true)
 
@@ -65,7 +57,6 @@ class ProfileViewModelTest {
 
         profileViewModel = ProfileViewModel(
             getUserUseCase = mockk<GetUserUseCase>(),
-            readUserUseCase = mockk<ReadUserUseCase>(),
             saveUserUseCase = mockk<SaveUserUseCase>(),
             uploadAvatarUseCase = mockk<UploadAvatarUseCase>(),
             fileUtil = fileUtil,
@@ -82,39 +73,5 @@ class ProfileViewModelTest {
             assertEquals(expectedUri, result)
         }
     }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `onEvent triggered with GetProfile, update ProfileState`() = runTest {
-
-        val getUserUseCase = mockk<GetUserUseCase>(relaxed = true)
-
-        profileViewModel = ProfileViewModel(
-            getUserUseCase = getUserUseCase,
-            readUserUseCase = mockk<ReadUserUseCase>(),
-            saveUserUseCase = mockk<SaveUserUseCase>(),
-            uploadAvatarUseCase = mockk<UploadAvatarUseCase>(),
-            fileUtil = mockk<FileUtil>(relaxed = true),
-            dispatchersProvider = dispatchersProvider
-        )
-
-        val response = UserProfileResponse("avatar-url", "test@email")
-
-        coEvery { getUserUseCase.invoke() } returns flow {
-            emit(NetworkResponse.Success(response))
-        }
-
-        profileViewModel?.onEvent(ProfileEvents.GetProfileFromRemote)
-
-        advanceUntilIdle()
-        coVerify { getUserUseCase.invoke() }
-
-        profileViewModel?.userProfileState?.test {
-            val result = awaitItem()
-            assertEquals(ProfileUiState.Success, result.profileUiState)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
 
 }

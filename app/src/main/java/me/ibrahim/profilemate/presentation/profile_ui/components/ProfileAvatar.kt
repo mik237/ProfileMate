@@ -72,16 +72,16 @@ fun ProfileAvatar(
             modifier = Modifier
                 .size(140.dp)
                 .clip(CircleShape),
-            contentScale = ContentScale.Fit,
+            contentScale = ContentScale.Crop,
             contentDescription = stringResource(id = R.string.profile_pic),
         )
 
         if (avatarState is AvatarState.Uploading) {
             CircularProgressIndicator(
                 modifier = Modifier
-                    .size(139.dp),
+                    .size(138.dp),
                 strokeWidth = 2.dp,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.inversePrimary
             )
         }
 
