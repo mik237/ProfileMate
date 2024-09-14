@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import me.ibrahim.profilemate.data.remote.ResponseBuilder
 import me.ibrahim.profilemate.data.managers.ApiManagerImpl
+import me.ibrahim.profilemate.data.managers.ConnectionManagerImpl
 import me.ibrahim.profilemate.data.remote.AuthInterceptor
 import me.ibrahim.profilemate.data.remote.RemoteAPIs
 import me.ibrahim.profilemate.data.remote.RemoteAPIsLocalImpl
@@ -77,7 +78,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideConnectionManager(app: Application) = ConnectionManager(app)
+    fun provideConnectionManager(app: Application): ConnectionManager = ConnectionManagerImpl(app)
 
 
     @Provides
