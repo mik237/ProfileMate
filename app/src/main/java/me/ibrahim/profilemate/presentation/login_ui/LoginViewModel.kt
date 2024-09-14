@@ -11,7 +11,7 @@ import me.ibrahim.profilemate.data.dto.LoginRequest
 import me.ibrahim.profilemate.data.remote.NetworkResponse
 import me.ibrahim.profilemate.domain.models.User
 import me.ibrahim.profilemate.domain.use_cases.login.LoginUseCase
-import me.ibrahim.profilemate.domain.use_cases.profile.SaveTokenUseCase
+import me.ibrahim.profilemate.domain.use_cases.main.SaveTokenUseCase
 import me.ibrahim.profilemate.domain.use_cases.profile.SaveUserUseCase
 import me.ibrahim.profilemate.domain.utils.DispatchersProvider
 import me.ibrahim.profilemate.utils.getGravatarUrl

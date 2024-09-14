@@ -1,6 +1,7 @@
 package me.ibrahim.profilemate.presentation.profile_ui
 
 import android.Manifest
+import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -86,6 +87,7 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
     if (showBottomSheet) {
         ImagePickerBottomSheet(onOptionSelected = { imagePickerOption ->
             handleImagePickerOptions(
+                context,
                 imagePickerOption,
                 profileVM,
                 cameraPermissionState,
@@ -99,6 +101,7 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
 
 @OptIn(ExperimentalPermissionsApi::class)
 fun handleImagePickerOptions(
+    context: Context,
     imagePickerOption: ImagePickerOption?,
     profileVM: ProfileViewModel,
     cameraPermissionState: PermissionState,
@@ -111,6 +114,7 @@ fun handleImagePickerOptions(
         ImagePickerOption.CAMERA -> {
             scope.launch {
                 if (cameraPermissionState.status.isGranted.not()) {
+                    Toast.makeText(context, "Camera permission is required", Toast.LENGTH_SHORT).show()
                     cameraPermissionState.launchPermissionRequest()
                 } else {
                     profileVM.imageUriStateFlow.value?.let { cameraLauncher.launch(it) }
