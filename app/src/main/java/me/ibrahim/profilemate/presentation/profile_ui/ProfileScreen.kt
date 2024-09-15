@@ -89,7 +89,7 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
             handleImagePickerOptions(
                 context,
                 imagePickerOption,
-                profileVM,
+                profilePicUri,
                 cameraPermissionState,
                 cameraLauncher,
                 galleryLauncher,
@@ -103,7 +103,7 @@ fun ProfileScreen(profileVM: ProfileViewModel = hiltViewModel()) {
 fun handleImagePickerOptions(
     context: Context,
     imagePickerOption: ImagePickerOption?,
-    profileVM: ProfileViewModel,
+    profilePicUri: Uri?,
     cameraPermissionState: PermissionState,
     cameraLauncher: ManagedActivityResultLauncher<Uri, Boolean>,
     galleryLauncher: ManagedActivityResultLauncher<String, Uri?>,
@@ -117,7 +117,7 @@ fun handleImagePickerOptions(
                     Toast.makeText(context, "Camera permission is required", Toast.LENGTH_SHORT).show()
                     cameraPermissionState.launchPermissionRequest()
                 } else {
-                    profileVM.imageUriStateFlow.value?.let { cameraLauncher.launch(it) }
+                    profilePicUri?.let { cameraLauncher.launch(it) }
                 }
             }.invokeOnCompletion { hideBottomSheet() }
         }
