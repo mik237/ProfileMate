@@ -8,6 +8,7 @@ import android.util.Base64
 import androidx.core.content.FileProvider
 import coil.imageLoader
 import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -37,7 +38,8 @@ class FileUtil @Inject constructor(@ApplicationContext private val context: Cont
         val imageLoader = context.imageLoader
         val request = ImageRequest.Builder(context)
             .data(uri)
-            .size(600)
+            .size(800)
+            .transformations(CircleCropTransformation(), GrayScaleTransformation())
             .target { drawable ->
                 val bitmap = (drawable as BitmapDrawable).bitmap
                 val base64 = bitmapToBase64(bitmap)
