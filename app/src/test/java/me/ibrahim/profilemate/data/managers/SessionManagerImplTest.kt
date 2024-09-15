@@ -33,13 +33,13 @@ class SessionManagerImplTest {
         val uniqueId = UUID.randomUUID().toString()
         val token = "$expiryTime:$uniqueId"
 
-        every { Base64.encodeToString(token.toByteArray(), Base64.DEFAULT) } answers {
+        every { Base64.encodeToString(token.toByteArray(), Base64.NO_WRAP) } answers {
             java.util.Base64.getEncoder().encodeToString(token.toByteArray())
         }
 
         val stringSlot = slot<String>()
 
-        every { Base64.decode(capture(stringSlot), Base64.DEFAULT) } answers {
+        every { Base64.decode(capture(stringSlot), Base64.NO_WRAP) } answers {
             java.util.Base64.getDecoder().decode(stringSlot.captured)
         }
 
@@ -61,13 +61,13 @@ class SessionManagerImplTest {
         val uniqueId = UUID.randomUUID().toString()
         val token = "$expiryTime:$uniqueId"
 
-        every { Base64.encodeToString(token.toByteArray(), Base64.DEFAULT) } answers {
+        every { Base64.encodeToString(token.toByteArray(), Base64.NO_WRAP) } answers {
             java.util.Base64.getEncoder().encodeToString(token.toByteArray())
         }
 
         val stringSlot = slot<String>()
 
-        every { Base64.decode(capture(stringSlot), Base64.DEFAULT) } answers {
+        every { Base64.decode(capture(stringSlot), Base64.NO_WRAP) } answers {
             java.util.Base64.getDecoder().decode(stringSlot.captured)
         }
 
@@ -102,7 +102,7 @@ class SessionManagerImplTest {
 
         val stringSlot = slot<String>()
 
-        every { Base64.decode(capture(stringSlot), Base64.DEFAULT) } answers {
+        every { Base64.decode(capture(stringSlot), Base64.NO_WRAP) } answers {
             java.util.Base64.getDecoder().decode(stringSlot.captured)
         }
 
