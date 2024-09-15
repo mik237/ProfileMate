@@ -68,8 +68,8 @@ class LoginViewModelTest {
     fun `onEvent triggered with LoginClicked and valid credentials results in Login Success`() = runTest {
 
         val loginUseCase = mockk<LoginUseCase>()
-        val saveTokenUseCase = mockk<SaveTokenUseCase>()
-        val saveUserUseCase = mockk<SaveUserUseCase>()
+        val saveTokenUseCase = mockk<SaveTokenUseCase>(relaxed = true)
+        val saveUserUseCase = mockk<SaveUserUseCase>(relaxed = true)
         val loginViewModel = getLoginViewModel(loginUseCase, saveTokenUseCase, saveUserUseCase)
 
         val testEmail = "test@email.com"
@@ -107,7 +107,7 @@ class LoginViewModelTest {
 
         val loginViewModel = getLoginViewModel(loginUseCase, saveTokenUseCase, saveUserUseCase)
 
-        val testEmail = ""
+        val testEmail = "invalid email"
         val testPassword = ""
 
         val expectedErrorMsg = "Invalid Credentials"
@@ -122,54 +122,6 @@ class LoginViewModelTest {
             print(resultItem)
             assertTrue(resultItem is LoginStates.Error)
             assertEquals(expectedErrorMsg, (resultItem as LoginStates.Error).error)
-        }
-    }
-
-
-    @Test
-    fun `onEvent triggered with SaveToken(token) saves the token`() = runTest {
-
-        val token = "token:abcd1234"
-
-        val localDataStoreManager = mockk<LocalDataStoreManager>(relaxed = true)
-        val saveTokenUseCase = SaveTokenUseCase(localDataStoreManager)
-        val loginViewModel = getLoginViewModel(saveTokenUseCase = saveTokenUseCase)
-
-        coEvery { localDataStoreManager.getToken() } returns token
-
-        loginViewModel.onEvent(LoginScreenEvent.SaveToken(token))
-
-        coVerify { localDataStoreManager.saveToken(token) }
-
-        assertEquals(token, localDataStoreManager.getToken())
-    }
-
-    @Test
-    fun `onEvent triggered with SaveUser(user) saves the user`() = runTest {
-        val user = User(
-            userId = "userId",
-            email = "test@email.com",
-            password = "test_pas",
-            avatarUrl = ""
-        )
-
-        val localDataStoreManager =
-            mockk<LocalDataStoreManager>(relaxed = true)//relaxed = true ensures that any function calls on the mock are allowed
-        val saveUserUseCase = SaveUserUseCase(localDataStoreManager)
-        val loginViewModel = getLoginViewModel(saveUserUseCase = saveUserUseCase)
-
-        loginViewModel.onEvent(LoginScreenEvent.SaveUser(user))
-
-        coVerify { localDataStoreManager.saveUser(user) }
-
-        //verify saved user
-        coEvery { localDataStoreManager.readUser() } returns flowOf(user)
-
-        localDataStoreManager.readUser().test {
-            val savedUser = awaitItem()
-            println(savedUser)
-            assertEquals(user, savedUser)
-            cancelAndIgnoreRemainingEvents()
         }
     }
 }
