@@ -31,11 +31,6 @@ object AppModule {
         return LocalDataStoreManagerImpl(context = app, gson = gson)
     }
 
-    @Provides
-    @Singleton
-    fun provideLoginUseCase(remoteRepository: RemoteRepository): LoginUseCase =
-        LoginUseCase(remoteRepository = remoteRepository)
-
 
     @Provides
     @Singleton
