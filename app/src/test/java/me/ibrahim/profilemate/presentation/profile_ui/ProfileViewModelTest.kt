@@ -3,10 +3,15 @@ package me.ibrahim.profilemate.presentation.profile_ui
 import android.net.Uri
 import app.cash.turbine.test
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import me.ibrahim.profilemate.TestDispatchersProvider
+import me.ibrahim.profilemate.data.dto.UserProfileResponse
 import me.ibrahim.profilemate.domain.use_cases.profile.GetUserUseCase
 import me.ibrahim.profilemate.domain.use_cases.profile.SaveUserUseCase
 import me.ibrahim.profilemate.domain.use_cases.profile.UploadAvatarUseCase
@@ -71,6 +76,38 @@ class ProfileViewModelTest {
             val result = awaitItem()
             println(result)
             assertEquals(expectedUri, result)
+        }
+    }
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `onEvent 'GetProfile', update ProfileState`() = runTest {
+
+        val getUserUseCase = mockk<GetUserUseCase>(relaxed = true)
+
+        profileViewModel = ProfileViewModel(
+            getUserUseCase = getUserUseCase,
+            saveUserUseCase = mockk<SaveUserUseCase>(),
+            uploadAvatarUseCase = mockk<UploadAvatarUseCase>(),
+            fileUtil = mockk<FileUtil>(relaxed = true),
+            dispatchersProvider = dispatchersProvider
+        )
+
+        val profileState = ProfileState(profileUiState = ProfileUiState.Success)
+        coEvery { getUserUseCase.invoke() } returns flowOf(profileState)
+
+        profileViewModel?.onEvent(ProfileEvents.GetProfile)
+
+        advanceUntilIdle()
+
+        coVerify { getUserUseCase.invoke() }
+
+        profileViewModel?.userProfileState?.test {
+            val result = awaitItem()
+            print(result)
+            assertEquals(ProfileUiState.Success, result.profileUiState)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
