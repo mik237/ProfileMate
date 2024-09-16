@@ -53,3 +53,7 @@ Screenshots
 - [Flow](https://developer.android.com/kotlin/flow): Handling data streams.
 - [Coil](https://coil-kt.github.io/coil/): Image loading.
 - [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver): HTTP mock server for testing.
+
+Architecture
+-----------
+<img src="media/architecture.png" width="100%"/>
